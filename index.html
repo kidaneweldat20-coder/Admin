@@ -89,6 +89,53 @@ const roomPrices = {
     "Double Room": 3000,
     "VIP Suite": 10000
 };
+// 1. መጀመርታ፡ እቲ ክፍሊ ኣብቲ ዝተሓረየሉ ዕለት ነጻ ምዃኑ ዝፍትሽ Function
+function isRoomOccupied(bookingToConfirm) {
+    return bookings.some(b => 
+        b.id !== bookingToConfirm.id && // ንባዕሉ ምስ ባዕሉ ከይነጻጸር
+        b.status === "Confirmed" &&    // ድሮ Confirmed ዝኾኑ ጥራይ ይርኢ
+        b.room === bookingToConfirm.room && // ሓደ ዓይነት ዓይነት ክፍሊ እንተኾይኖም
+        // ዕለት overlap ይገብር ዶ? (Check if dates clash)
+        (new Date(bookingToConfirm.checkIn) < new Date(b.checkOut) && 
+         new Date(bookingToConfirm.checkOut) > new Date(b.checkIn))
+    );
+}
+
+// 2. እታ ቀንዲ Confirm እትገብር Function
+function confirmBooking(bookingId) {
+    // ነቲ ዝተሓረየ Booking ካብቲ ዝርዝር ፈልኻ ኣውጽኣዮ
+    const bookingToConfirm = bookings.find(b => b.id === bookingId);
+
+    // ቅድሚ Confirm ምግባር፡ እቲ ክፍሊ ተታሒዙ እንተኾይኑ ኣረጋግጽ
+    if (isRoomOccupied(bookingToConfirm)) {
+        alert("⚠️ ጸገም ተፈጢሩ! እዚ ክፍሊ ኣብዚ ዝተሓረየሉ ዕለት ድሮ ተታሒዙ እዩ (Already Booked)።");
+        return; // እቲ Function ኣብዚ ደው ይብል፣ Confirmed ኣይኸውንን
+    }
+
+    // ትርፊ እንተኾይኑ ጥራይ Status ቀይሮ
+    bookingToConfirm.status = "Confirmed";
+    
+    // Revenue ኣሐድስ (Confirmed ዝኾኑ ጥራይ ክጽብጽብ)
+    updateRevenue();
+    
+    // ሰደቓ (Table) እንደገና ኣርኢ (Refresh Table)
+    renderTable();
+}
+
+// 3. እቲ Revenue ብልክዕ Confirmed ዝኾኑ ጥራይ ንክጽብጽብ
+function updateRevenue() {
+    let totalRevenue = 0;
+    bookings.forEach(b => {
+        if (b.status === "Confirmed") {
+            totalRevenue += parseFloat(b.price || 0);
+        }
+    });
+    
+    const revenueElement = document.getElementById('totalRevenue');
+    if (revenueElement) {
+        revenueElement.innerText = totalRevenue + " ETB";
+    }
+}
 
 async function fetchAllBookings() {
     const tbody = document.getElementById("tableBody");
@@ -145,22 +192,50 @@ async function fetchAllBookings() {
         tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
     }
 }
-    async function updateStatus(row, newStatus) {
-        if(!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
-
+async function updateStatus(row, newStatus) {
+    // 1. መጀመርታ "Confirmed" ክንገብር እንተደሊና ጥራይ ቼክ ንገብር
+    if (newStatus === 'Confirmed') {
         try {
-            await fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({ action: "updateStatus", row: row, status: newStatus })
-            });
-            alert("Status ተቐይሩ ኣሎ!");
-            fetchAllBookings(); // ሰሌዳ ሪፈረሽ ንምግባር
+            // ኩሎም Bookings ደጊምና ንውሰዶም (Current Data ንምርኣይ)
+            const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
+            const allBookings = await response.json();
+            
+            // ነቲ ሕጂ ክነረጋግጾ ዝደለና ዘለና Booking ንለልዮ
+            const currentBooking = allBookings.find(b => b.row === row);
+            
+            // እቲ ክፍሊ ኣብቲ ዕለት እቲ ተታሒዙ እንተኾይኑ ንፈትሽ
+            const isTaken = allBookings.some(b => 
+                b.row !== row && 
+                b.status === "Confirmed" && 
+                b.room === currentBooking.room &&
+                (new Date(currentBooking.checkIn) < new Date(b.checkOut) && 
+                 new Date(currentBooking.checkOut) > new Date(b.checkIn))
+            );
+
+            if (isTaken) {
+                alert("⚠️ ጸገም! እዚ ክፍሊ ኣብዚ ዕለት እዚ ድሮ ተታሒዙ እዩ (Room Occupied)።");
+                return; // ስራሕ ደው ይብል
+            }
         } catch (e) {
-            alert("ጌጋ ተፈጢሩ!");
+            console.error("Validation Error:", e);
         }
     }
 
+    // 2. እቲ ዝነበረ ናይ Confirm ሕቶ
+    if(!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
+
+    try {
+        await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ action: "updateStatus", row: row, status: newStatus })
+        });
+        alert("Status ብትኽክል ተቐይሩ ኣሎ!");
+        fetchAllBookings(); 
+    } catch (e) {
+        alert("ጌጋ ተፈጢሩ!");
+    }
+}
     // መጀመርታ ክኽፈት ከሎ ዳታ ይጽዓን
     window.onload = fetchAllBookings;
 </script>
