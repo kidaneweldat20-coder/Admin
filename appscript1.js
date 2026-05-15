@@ -1,77 +1,108 @@
 /**
- * KINGDOM HOTEL - BACKEND SYSTEM
- * -----------------------------
- * ዝተፈላለዩ ተግባራት: 
- * 1. ሓድሽ ምዝገባ ምቕባል
- * 2. ምዝገባ ምርግጋጽ/ምስራዝ (Update Status)
- * 3. ዘለዉ ምዝገባታት ዳታ ምሃብ
- * 4. ክፍሊ ምህላው/ዘይምህላው ምርጋጽ (Availability)
+ * KINGDOM HOTEL - BACKEND SYSTEM (UPDATED & FIXED)
+ * -----------------------------------------------
  */
 
 function doPost(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Kingdom backend");
-  var data = JSON.parse(e.postData.contents);
+  var data = {};
 
-  // --- 1. ካብ Admin Dashboard ዝመጽእ Status Update (Confirm/Cancel) ---
+  // --- 1. ካብ ዝተፈላለዩ ፎርማታት (URL-encoded ወይ JSON) ዳታ ምውህሃድ ---
+  if (e.parameter && e.parameter.action) {
+    data = e.parameter;
+  } else if (e.postData && e.postData.contents) {
+    try {
+      data = JSON.parse(e.postData.contents);
+    } catch (err) {
+      // ሓደ ሓደ ግዜ ጽሑፍ ኮይኑ ከም ፎርማት ዌብ ክመጽእ ከሎ ንምፍታሕ
+      var raw = e.postData.contents;
+      var pairs = raw.split('&');
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        data[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+      }
+    }
+  }
+
+  // --- 2. ካብ Admin Dashboard ዝመጽእ Status Update (Confirm/Cancel) ---
   if (data.action === "updateStatus") {
-    // ኣብቲ ዝተዋህበ መስርዕ (Row) Status ጥራይ ምቕያር
-    sheet.getRange(data.row, 8).setValue(data.status); // Column H: Status
+    var rowIndex = parseInt(data.row);
+    var newStatus = data.status;
+    
+    // Column H ማለት መበል 8 ዓንዲ እዩ (Status)
+    sheet.getRange(rowIndex, 8).setValue(newStatus); 
     
     // ንዓሚል ሓበሬታ ንምልኣኽ ዳታ ምውሳድ
-    var rowData = sheet.getRange(data.row, 1, 1, 8).getValues()[0];
+    var rowData = sheet.getRange(rowIndex, 1, 1, 8).getValues()[0];
     var customerName = rowData[1];  // Column B
     var customerEmail = rowData[2]; // Column C
     var roomType = rowData[3];      // Column D
 
     // ናይ Status ለውጢ ኢመይል ምስዳድ
-    sendStatusEmail(customerEmail, customerName, roomType, data.status);
+    try {
+      sendStatusEmail(customerEmail, customerName, roomType, newStatus);
+    } catch (emailErr) {
+      console.log("Email sending failed: " + emailErr);
+    }
     
-    return ContentService.createTextOutput("Updated and Email Sent");
+    var response = { "status": "success", "message": "Status updated and email processed." };
+    return ContentService.createTextOutput(JSON.stringify(response))
+                         .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // --- 2. ሓድሽ ምዝገባ (New Booking) ---
-  // ዳታ ናብቲ ሽት (Sheet) ምእታው
-  sheet.appendRow([
-    new Date(),      // A: Timestamp
-    data.name,       // B: Name
-    data.email,      // C: Email
-    data.room,       // D: Room type
-    data.receipt,    // E: Receipt link
-    data.checkIn,    // F: Check-in
-    data.checkOut,   // G: Check-out
-    "Pending"        // H: Status (መጀመርታ ኩሉ ግዜ Pending እዩ)
-  ]);
+  // --- 3. ሓድሽ ምዝገባ ካብ ዓማውል (New Booking) ---
+  if (data.name) {
+    sheet.appendRow([
+      new Date(),      // A: Timestamp
+      data.name,       // B: Name
+      data.email,      // C: Email
+      data.room,       // D: Room type
+      data.receipt,    // E: Receipt link
+      data.checkIn,    // F: Check-in
+      data.checkOut,   // G: Check-out
+      "Pending"        // H: Status
+    ]);
 
-  // ናይ መጀመርታ "ምዝገባ ተቐቢልናዮ ኣለና" ዝብል ኢመይል
-  try {
-    sendConfirmationEmail(data.email, data.name, data.room, data.checkIn, data.checkOut);
-  } catch (err) { 
-    console.log("Initial email error: " + err); 
+    // ናይ መጀመርታ "ምዝገባ ተቐቢልናዮ ኣለና" ዝብል ኢመይል
+    try {
+      sendConfirmationEmail(data.email, data.name, data.room, data.checkIn, data.checkOut);
+    } catch (err) { 
+      console.log("Initial email error: " + err); 
+    }
+
+    var response = { "status": "success", "message": "Booking added successfully." };
+    return ContentService.createTextOutput(JSON.stringify(response))
+                         .setMimeType(ContentService.MimeType.JSON);
   }
 
-  return ContentService.createTextOutput("Success");
+  var errorResponse = { "status": "error", "message": "Invalid action or parameters" };
+  return ContentService.createTextOutput(JSON.stringify(errorResponse))
+                       .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Kingdom backend");
 
-  // --- 3. Dashboard Data (ንኹሉ ምዝገባታት ምርኣይ) ---
+  // --- 4. Dashboard Data (ንኹሉ ምዝገባታት ምርኣይ) ---
   if (e.parameter.action === "getAllBookings") {
     var data = sheet.getDataRange().getValues();
     var bookings = [];
     
     for (var i = 1; i < data.length; i++) {
+      // እንተደኣ እቲ መስመር ባዶ ኾይኑ ንከይወስዶ
+      if (!data[i][1]) continue; 
+      
       bookings.push({
         row: i + 1, 
-        timestamp: data[i][0], 
+        timestamp: data[i][0] ? Utilities.formatDate(new Date(data[i][0]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd HH:mm") : "", 
         name: data[i][1], 
         email: data[i][2],
         room: data[i][3], 
         receipt: data[i][4], 
-        checkIn: data[i][5], 
-        checkOut: data[i][6],
+        checkIn: data[i][5] ? Utilities.formatDate(new Date(data[i][5]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "", 
+        checkOut: data[i][6] ? Utilities.formatDate(new Date(data[i][6]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "",
         status: data[i][7] || "Pending"
       });
     }
@@ -79,18 +110,22 @@ function doGet(e) {
                          .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // --- 4. Check Availability (ክፍሊ ምህላው/ዘይምህላው ምርጋጽ) ---
+  // --- 5. Check Availability (ክፍሊ ምህላው/ዘይምህላው ምርጋጽ) ---
   var room = e.parameter.room;
   var checkIn = new Date(e.parameter.checkIn);
   var checkOut = new Date(e.parameter.checkOut);
   
   // ካብ Inventory Sheet ጠቕላላ ብዝሒ ክፍልታት ምርካብ
   var inventorySheet = ss.getSheetByName("Inventory");
+  if (!inventorySheet) {
+    return ContentService.createTextOutput(JSON.stringify({ "error": "Inventory sheet not found" })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
   var invData = inventorySheet.getDataRange().getValues();
   var total = 0;
   for (var i = 1; i < invData.length; i++) { 
     if (invData[i][0] === room) { 
-      total = invData[i][1]; 
+      total = parseInt(invData[i][1]) || 0; 
       break; 
     } 
   }

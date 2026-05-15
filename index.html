@@ -27,14 +27,16 @@
         tr:hover { background: #f9f9f9; }
 
         /* Action Buttons */
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
         .confirm-btn { background: #28a745; color: white; margin-right: 5px; }
         .cancel-btn { background: #dc3545; color: white; }
         .view-receipt { background: var(--gold); color: white; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
         
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize; }
         .pending { background: #fff3cd; color: #856404; }
         .confirmed { background: #d4edda; color: #155724; }
+        .cancelled { background: #f8d7da; color: #721c24; }
 
         @media (max-width: 768px) {
             table { display: block; overflow-x: auto; }
@@ -59,7 +61,7 @@
         </div>
         <div class="card">
             <h3>Revenue (እቶት)</h3>
-            <p id="revenue">--</p>
+            <p id="revenue">0 ETB</p>
         </div>
     </div>
 
@@ -77,11 +79,13 @@
             </tr>
         </thead>
         <tbody id="tableBody">
-            </tbody>
+        </tbody>
     </table>
 </div>
+
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQFGB1ushZyIND2lZ93L94jGlaUEY2cradAJ2LrAHM0AoeZT0WND6VXRqE4jSccOMFWA/exec";
+    // ናትካ Web App URL ኣብዚ ኣእትዎ
+   const SCRIPT_URL ="https://script.google.com/macros/s/AKfycbwxzk-3RKxuYF_pPzw05Z8J9VRnTz0duiZcLAYIWwn1QGLzUUiAdlNbqnHFljJnGXAumA/exec";
     
     const roomPrices = {
         "Single Room": 1250,
@@ -89,65 +93,76 @@
         "VIP Suite": 10000
     };
 
-    let cachedBookings = []; // ኩሎም መዝገባት ኣብዚ ይዕቀቡ
-
+    // 1. ኩሉ ዳታ ካብ Google Sheet ንምምጻእ
     async function fetchAllBookings() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>ይጽዓን ኣሎ...</td></tr>";
 
         try {
             const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
-            cachedBookings = await response.json(); // ዳታ ኣብ ዝኽሪ (Cache) ንዕቅቦ
+            const bookings = await response.json();
+
+            // ንዳታ ኣብ window object ንዕቅቦ
+            window.allBookingsData = bookings; 
 
             tbody.innerHTML = "";
             let totalRevenue = 0;
             let pending = 0;
 
-            // ዳታ ካብቲ ሓድሽ ናብቲ ናይ ቀደም (Reverse)
-            [...cachedBookings].reverse().forEach(book => {
-                // እቶት ንምጽብጻብ (Confirmed ጥራይ)
-                if (book.status === "Confirmed") {
+            // ሓደሽቲ ምዝገባታት ኣብ ላዕሊ ንክመጹ ንግልብጦ (Reverse)
+            [...bookings].reverse().forEach(book => {
+                const currentStatus = book.status || 'Pending';
+                
+                if (currentStatus === "Confirmed") {
                     const start = new Date(book.checkIn);
                     const end = new Date(book.checkOut);
                     const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
                     totalRevenue += ((roomPrices[book.room] || 0) * diffDays);
                 }
 
-                if (book.status === "Pending" || !book.status) pending++;
+                if (currentStatus === "Pending") pending++;
 
                 const row = `
                     <tr>
-                        <td><strong>${book.name}</strong><br><small>${book.timestamp}</small></td>
+                        <td><strong>${book.name}</strong><br><small>${book.timestamp || ''}</small></td>
                         <td>${book.room}</td>
                         <td>${book.checkIn} - ${book.checkOut}</td>
-                        <td><a href="${book.receipt}" target="_blank" class="btn view-receipt"><i class="fas fa-image"></i> View</a></td>
-                        <td><span class="status-badge ${book.status?.toLowerCase() || 'pending'}">${book.status || 'Pending'}</span></td>
                         <td>
-                            <button class="btn confirm-btn" onclick="updateStatus(${book.row}, 'Confirmed')">Confirm</button>
-                            <button class="btn cancel-btn" onclick="updateStatus(${book.row}, 'Cancelled')">Cancel</button>
+                            ${book.receipt ? `<a href="${book.receipt}" target="_blank" class="btn view-receipt"><i class="fas fa-image"></i> View</a>` : 'No Receipt'}
+                        </td>
+                        <td><span class="status-badge ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
+                        <td>
+                            <button class="btn confirm-btn" onclick="updateStatus(${book.row}, 'Confirmed', this)">Confirm</button>
+                            <button class="btn cancel-btn" onclick="updateStatus(${book.row}, 'Cancelled', this)">Cancel</button>
                         </td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
             });
 
-            // Stats Update
-            document.getElementById("totalCount").innerText = cachedBookings.length;
+            document.getElementById("totalCount").innerText = bookings.length;
             document.getElementById("pendingCount").innerText = pending;
             document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB";
 
         } catch (error) {
-            console.error(error);
-            tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
+            console.error("Fetch Error:", error);
+            tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን። በጃኹም Google Script URL ወይ ኔትወርክ ፈትሹ።</td></tr>";
         }
     }
 
-    async function updateStatus(row, newStatus) {
-        const currentBooking = cachedBookings.find(b => b.row === row);
-        
-        // 1. "Confirmed" ክንገብር እንተደሊና፡ እቲ ክፍሊ ነጻ ምዃኑ ካብቲ Cache ንፈትሽ
+    // 2. Status ንምቕያር (Confirm/Cancel)
+    async function updateStatus(row, newStatus, buttonElement) {
+        const bookings = window.allBookingsData || [];
+        const currentBooking = bookings.find(b => b.row === row);
+
+        if (!currentBooking) {
+            alert("Error: Booking data not found. Please refresh.");
+            return;
+        }
+
+        // Overbooking Check (ንዝተታሕዘ ክፍሊ ደጊምካ ንከይትሕዝ)
         if (newStatus === 'Confirmed') {
-            const isTaken = cachedBookings.some(b => 
+            const isTaken = bookings.some(b => 
                 b.row !== row && 
                 b.status === "Confirmed" && 
                 b.room === currentBooking.room &&
@@ -157,31 +172,46 @@
 
             if (isTaken) {
                 alert("⚠️ ጸገም! እዚ ክፍሊ ኣብዚ ዕለት እዚ ድሮ ተታሒዙ እዩ (Room Occupied)።");
-                return; 
+                return;
             }
         }
 
-        if(!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
+        if (!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
 
-        // UI ንግዚኡ 'Loading' ንክመስል
-        alert("ክፍጸም እዩ፡ ንሒደት ካልኢታት ተጸበ...");
+        // UI ሎዲንግ ንምርኣይ
+        const originalText = buttonElement.innerHTML;
+        buttonElement.innerText = "Updating...";
+        buttonElement.disabled = true;
 
         try {
-            await fetch(SCRIPT_URL, {
+            // Google Apps Script ን Content-Type: application/json ብ CORS ስለዘይቅበሎ፡ ብ URL-encoded ፎርማት ንሰዶ
+            const response = await fetch(SCRIPT_URL, {
                 method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({ action: "updateStatus", row: row, status: newStatus })
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `action=updateStatus&row=${row}&status=${newStatus}`
             });
-            
-            // ድሕሪ 2 ካልኢት ዳታ ሪፈረሽ ንገብሮ (Google Sheets ንክመዝገብ ግዜ ንህቦ)
-            setTimeout(fetchAllBookings, 2000);
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(`Status successfully changed to ${newStatus}!`);
+                fetchAllBookings(); // ሪፈረሽ ንምግባር
+            } else {
+                alert("ጌጋ ተፈጢሩ: " + result.message);
+                buttonElement.innerHTML = originalText;
+                buttonElement.disabled = false;
+            }
         } catch (e) {
-            alert("ጌጋ ተፈጢሩ!");
+            console.error("Update Error:", e);
+            // Google Script ሓደ ሓደ ግዜ Redirect ስለዝገብር ጌጋ እንተየርኣየ እውን ዳታ ክቕየር ስለ ዝኽእል ፈትሽዎ
+            alert("ትእዛዝ ተሰዲዱ ኣሎ! ንምርግጋጽ ዳታ ሪፈረሽ ይግበር።");
+            fetchAllBookings();
         }
     }
 
     window.onload = fetchAllBookings;
 </script>
-
 </body>
 </html>
