@@ -80,131 +80,74 @@
             </tbody>
     </table>
 </div>
-
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQFGB1ushZyIND2lZ93L94jGlaUEY2cradAJ2LrAHM0AoeZT0WND6VXRqE4jSccOMFWA/exec";
-    // ዋጋታት ክፍልታት ብመሰረት ዝሃብካኒ
-const roomPrices = {
-    "Single Room": 1250,
-    "Double Room": 3000,
-    "VIP Suite": 10000
-};
-// 1. መጀመርታ፡ እቲ ክፍሊ ኣብቲ ዝተሓረየሉ ዕለት ነጻ ምዃኑ ዝፍትሽ Function
-function isRoomOccupied(bookingToConfirm) {
-    return bookings.some(b => 
-        b.id !== bookingToConfirm.id && // ንባዕሉ ምስ ባዕሉ ከይነጻጸር
-        b.status === "Confirmed" &&    // ድሮ Confirmed ዝኾኑ ጥራይ ይርኢ
-        b.room === bookingToConfirm.room && // ሓደ ዓይነት ዓይነት ክፍሊ እንተኾይኖም
-        // ዕለት overlap ይገብር ዶ? (Check if dates clash)
-        (new Date(bookingToConfirm.checkIn) < new Date(b.checkOut) && 
-         new Date(bookingToConfirm.checkOut) > new Date(b.checkIn))
-    );
-}
-
-// 2. እታ ቀንዲ Confirm እትገብር Function
-function confirmBooking(bookingId) {
-    // ነቲ ዝተሓረየ Booking ካብቲ ዝርዝር ፈልኻ ኣውጽኣዮ
-    const bookingToConfirm = bookings.find(b => b.id === bookingId);
-
-    // ቅድሚ Confirm ምግባር፡ እቲ ክፍሊ ተታሒዙ እንተኾይኑ ኣረጋግጽ
-    if (isRoomOccupied(bookingToConfirm)) {
-        alert("⚠️ ጸገም ተፈጢሩ! እዚ ክፍሊ ኣብዚ ዝተሓረየሉ ዕለት ድሮ ተታሒዙ እዩ (Already Booked)።");
-        return; // እቲ Function ኣብዚ ደው ይብል፣ Confirmed ኣይኸውንን
-    }
-
-    // ትርፊ እንተኾይኑ ጥራይ Status ቀይሮ
-    bookingToConfirm.status = "Confirmed";
     
-    // Revenue ኣሐድስ (Confirmed ዝኾኑ ጥራይ ክጽብጽብ)
-    updateRevenue();
-    
-    // ሰደቓ (Table) እንደገና ኣርኢ (Refresh Table)
-    renderTable();
-}
+    const roomPrices = {
+        "Single Room": 1250,
+        "Double Room": 3000,
+        "VIP Suite": 10000
+    };
 
-// 3. እቲ Revenue ብልክዕ Confirmed ዝኾኑ ጥራይ ንክጽብጽብ
-function updateRevenue() {
-    let totalRevenue = 0;
-    bookings.forEach(b => {
-        if (b.status === "Confirmed") {
-            totalRevenue += parseFloat(b.price || 0);
-        }
-    });
-    
-    const revenueElement = document.getElementById('totalRevenue');
-    if (revenueElement) {
-        revenueElement.innerText = totalRevenue + " ETB";
-    }
-}
+    let cachedBookings = []; // ኩሎም መዝገባት ኣብዚ ይዕቀቡ
 
-async function fetchAllBookings() {
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>ይጽዓን ኣሎ...</td></tr>";
+    async function fetchAllBookings() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>ይጽዓን ኣሎ...</td></tr>";
 
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
-        const bookings = await response.json();
-
-        tbody.innerHTML = "";
-        let totalRevenue = 0;
-        let pending = 0;
-
-        // ዳታ ካብቲ ሓድሽ ናብቲ ናይ ቀደም ንምርኣይ (Reverse)
-        bookings.reverse().forEach(book => {
-            // እቶት ንምጽብጻብ (Confirmed ጥራይ)
-            if (book.status === "Confirmed") {
-                const start = new Date(book.checkIn);
-                const end = new Date(book.checkOut);
-                
-                // ብዝሒ መዓልታት (እንተነኣሰ 1 መዓልቲ)
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-                
-                const pricePerNight = roomPrices[book.room] || 0;
-                totalRevenue += (pricePerNight * diffDays);
-            }
-
-            if (book.status === "Pending" || !book.status) pending++;
-
-            const row = `
-                <tr>
-                    <td><strong>${book.name}</strong><br><small>${book.timestamp}</small></td>
-                    <td>${book.room}</td>
-                    <td>${book.checkIn} - ${book.checkOut}</td>
-                    <td><a href="${book.receipt}" target="_blank" class="btn view-receipt"><i class="fas fa-image"></i> View</a></td>
-                    <td><span class="status-badge ${book.status?.toLowerCase() || 'pending'}">${book.status || 'Pending'}</span></td>
-                    <td>
-                        <button class="btn confirm-btn" onclick="updateStatus(${book.row}, 'Confirmed')">Confirm</button>
-                        <button class="btn cancel-btn" onclick="updateStatus(${book.row}, 'Cancelled')">Cancel</button>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
-
-        // Dashboard Stats Update
-        document.getElementById("totalCount").innerText = bookings.length;
-        document.getElementById("pendingCount").innerText = pending;
-        document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB";
-
-    } catch (error) {
-        console.error(error);
-        tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
-    }
-}
-async function updateStatus(row, newStatus) {
-    // 1. መጀመርታ "Confirmed" ክንገብር እንተደሊና ጥራይ ቼክ ንገብር
-    if (newStatus === 'Confirmed') {
         try {
-            // ኩሎም Bookings ደጊምና ንውሰዶም (Current Data ንምርኣይ)
             const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
-            const allBookings = await response.json();
-            
-            // ነቲ ሕጂ ክነረጋግጾ ዝደለና ዘለና Booking ንለልዮ
-            const currentBooking = allBookings.find(b => b.row === row);
-            
-            // እቲ ክፍሊ ኣብቲ ዕለት እቲ ተታሒዙ እንተኾይኑ ንፈትሽ
-            const isTaken = allBookings.some(b => 
+            cachedBookings = await response.json(); // ዳታ ኣብ ዝኽሪ (Cache) ንዕቅቦ
+
+            tbody.innerHTML = "";
+            let totalRevenue = 0;
+            let pending = 0;
+
+            // ዳታ ካብቲ ሓድሽ ናብቲ ናይ ቀደም (Reverse)
+            [...cachedBookings].reverse().forEach(book => {
+                // እቶት ንምጽብጻብ (Confirmed ጥራይ)
+                if (book.status === "Confirmed") {
+                    const start = new Date(book.checkIn);
+                    const end = new Date(book.checkOut);
+                    const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
+                    totalRevenue += ((roomPrices[book.room] || 0) * diffDays);
+                }
+
+                if (book.status === "Pending" || !book.status) pending++;
+
+                const row = `
+                    <tr>
+                        <td><strong>${book.name}</strong><br><small>${book.timestamp}</small></td>
+                        <td>${book.room}</td>
+                        <td>${book.checkIn} - ${book.checkOut}</td>
+                        <td><a href="${book.receipt}" target="_blank" class="btn view-receipt"><i class="fas fa-image"></i> View</a></td>
+                        <td><span class="status-badge ${book.status?.toLowerCase() || 'pending'}">${book.status || 'Pending'}</span></td>
+                        <td>
+                            <button class="btn confirm-btn" onclick="updateStatus(${book.row}, 'Confirmed')">Confirm</button>
+                            <button class="btn cancel-btn" onclick="updateStatus(${book.row}, 'Cancelled')">Cancel</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            // Stats Update
+            document.getElementById("totalCount").innerText = cachedBookings.length;
+            document.getElementById("pendingCount").innerText = pending;
+            document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB";
+
+        } catch (error) {
+            console.error(error);
+            tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
+        }
+    }
+
+    async function updateStatus(row, newStatus) {
+        const currentBooking = cachedBookings.find(b => b.row === row);
+        
+        // 1. "Confirmed" ክንገብር እንተደሊና፡ እቲ ክፍሊ ነጻ ምዃኑ ካብቲ Cache ንፈትሽ
+        if (newStatus === 'Confirmed') {
+            const isTaken = cachedBookings.some(b => 
                 b.row !== row && 
                 b.status === "Confirmed" && 
                 b.room === currentBooking.room &&
@@ -214,29 +157,29 @@ async function updateStatus(row, newStatus) {
 
             if (isTaken) {
                 alert("⚠️ ጸገም! እዚ ክፍሊ ኣብዚ ዕለት እዚ ድሮ ተታሒዙ እዩ (Room Occupied)።");
-                return; // ስራሕ ደው ይብል
+                return; 
             }
+        }
+
+        if(!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
+
+        // UI ንግዚኡ 'Loading' ንክመስል
+        alert("ክፍጸም እዩ፡ ንሒደት ካልኢታት ተጸበ...");
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ action: "updateStatus", row: row, status: newStatus })
+            });
+            
+            // ድሕሪ 2 ካልኢት ዳታ ሪፈረሽ ንገብሮ (Google Sheets ንክመዝገብ ግዜ ንህቦ)
+            setTimeout(fetchAllBookings, 2000);
         } catch (e) {
-            console.error("Validation Error:", e);
+            alert("ጌጋ ተፈጢሩ!");
         }
     }
 
-    // 2. እቲ ዝነበረ ናይ Confirm ሕቶ
-    if(!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
-
-    try {
-        await fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ action: "updateStatus", row: row, status: newStatus })
-        });
-        alert("Status ብትኽክል ተቐይሩ ኣሎ!");
-        fetchAllBookings(); 
-    } catch (e) {
-        alert("ጌጋ ተፈጢሩ!");
-    }
-}
-    // መጀመርታ ክኽፈት ከሎ ዳታ ይጽዓን
     window.onload = fetchAllBookings;
 </script>
 
