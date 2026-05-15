@@ -82,10 +82,9 @@
         </tbody>
     </table>
 </div>
-
 <script>
-    // ናትካ Web App URL ኣብዚ ኣእትዎ
-   const SCRIPT_URL ="https://script.google.com/macros/s/AKfycbwxzk-3RKxuYF_pPzw05Z8J9VRnTz0duiZcLAYIWwn1QGLzUUiAdlNbqnHFljJnGXAumA/exec";
+    // ናትካ Web App URL (እቲ ሓድሽ Deployment URL ምዃኑ ኣረጋግጽ)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxySwaR6zkmTedIuFIrTCp9eLy4Opy5oBmqrnrTWDfFyrD8zvA3s_411jmWfuAM4pJhbA/exec";
     
     const roomPrices = {
         "Single Room": 1250,
@@ -102,17 +101,16 @@
             const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
             const bookings = await response.json();
 
-            // ንዳታ ኣብ window object ንዕቅቦ
             window.allBookingsData = bookings; 
 
             tbody.innerHTML = "";
             let totalRevenue = 0;
             let pending = 0;
 
-            // ሓደሽቲ ምዝገባታት ኣብ ላዕሊ ንክመጹ ንግልብጦ (Reverse)
             [...bookings].reverse().forEach(book => {
-                const currentStatus = book.status || 'Pending';
+                const currentStatus = book.status || 'Pending'; //
                 
+                // Revenue ዝሕሰብ ንConfirmed ጥራይ እዩ
                 if (currentStatus === "Confirmed") {
                     const start = new Date(book.checkIn);
                     const end = new Date(book.checkOut);
@@ -121,6 +119,10 @@
                 }
 
                 if (currentStatus === "Pending") pending++;
+
+                // --- ዝተኣረመ Disable Logic ---
+                // Status 'Confirmed' ወይ 'Cancelled' እንተኾይኑ፡ Buttons disabled ይኾኑ
+                const isDisabled = (currentStatus === "Confirmed" || currentStatus === "Cancelled") ? "disabled" : "";
 
                 const row = `
                     <tr>
@@ -132,8 +134,12 @@
                         </td>
                         <td><span class="status-badge ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
                         <td>
-                            <button class="btn confirm-btn" onclick="updateStatus(${book.row}, 'Confirmed', this)">Confirm</button>
-                            <button class="btn cancel-btn" onclick="updateStatus(${book.row}, 'Cancelled', this)">Cancel</button>
+                            <button class="btn confirm-btn" 
+                                    onclick="updateStatus(${book.row}, 'Confirmed', this)" 
+                                    ${isDisabled}>Confirm</button>
+                            <button class="btn cancel-btn" 
+                                    onclick="updateStatus(${book.row}, 'Cancelled', this)" 
+                                    ${isDisabled}>Cancel</button>
                         </td>
                     </tr>
                 `;
@@ -146,72 +152,55 @@
 
         } catch (error) {
             console.error("Fetch Error:", error);
-            tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን። በጃኹም Google Script URL ወይ ኔትወርክ ፈትሹ።</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
         }
     }
 
-    // 2. Status ንምቕያር (Confirm/Cancel)
+    // 2. Status ንምቕያር (Confirm/Cancel) + ኢመይል ንምስዳድ
     async function updateStatus(row, newStatus, buttonElement) {
         const bookings = window.allBookingsData || [];
         const currentBooking = bookings.find(b => b.row === row);
 
         if (!currentBooking) {
-            alert("Error: Booking data not found. Please refresh.");
+            alert("Error: Booking data not found.");
             return;
         }
 
-        // Overbooking Check (ንዝተታሕዘ ክፍሊ ደጊምካ ንከይትሕዝ)
-        if (newStatus === 'Confirmed') {
-            const isTaken = bookings.some(b => 
-                b.row !== row && 
-                b.status === "Confirmed" && 
-                b.room === currentBooking.room &&
-                (new Date(currentBooking.checkIn) < new Date(b.checkOut) && 
-                 new Date(currentBooking.checkOut) > new Date(b.checkIn))
-            );
+        if (!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮን ንዓሚል ኢመይል ክትሰደሉን ርግጸኛ ዲኻ?`)) return;
 
-            if (isTaken) {
-                alert("⚠️ ጸገም! እዚ ክፍሊ ኣብዚ ዕለት እዚ ድሮ ተታሒዙ እዩ (Room Occupied)።");
-                return;
-            }
-        }
-
-        if (!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮ ርግጸኛ ዲኻ?`)) return;
-
-        // UI ሎዲንግ ንምርኣይ
-        const originalText = buttonElement.innerHTML;
-        buttonElement.innerText = "Updating...";
+        buttonElement.innerText = "Processing...";
         buttonElement.disabled = true;
 
         try {
-            // Google Apps Script ን Content-Type: application/json ብ CORS ስለዘይቅበሎ፡ ብ URL-encoded ፎርማት ንሰዶ
-            const response = await fetch(SCRIPT_URL, {
+            const updateData = {
+                action: "updateStatus",
+                row: row,
+                status: newStatus
+            };
+
+            await fetch(SCRIPT_URL, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `action=updateStatus&row=${row}&status=${newStatus}`
+                mode: "no-cors", 
+                body: JSON.stringify(updateData)
             });
 
-            const result = await response.json();
+            alert(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ ${newStatus} ኢመይል ክበጽሖ እዩ።`);
+            
+            // UI ብኡንብኡ ሪፈረሽ ንምግባር
+            setTimeout(() => {
+                fetchAllBookings(); 
+            }, 1000);
 
-            if (result.status === "success") {
-                alert(`Status successfully changed to ${newStatus}!`);
-                fetchAllBookings(); // ሪፈረሽ ንምግባር
-            } else {
-                alert("ጌጋ ተፈጢሩ: " + result.message);
-                buttonElement.innerHTML = originalText;
-                buttonElement.disabled = false;
-            }
         } catch (e) {
             console.error("Update Error:", e);
-            // Google Script ሓደ ሓደ ግዜ Redirect ስለዝገብር ጌጋ እንተየርኣየ እውን ዳታ ክቕየር ስለ ዝኽእል ፈትሽዎ
-            alert("ትእዛዝ ተሰዲዱ ኣሎ! ንምርግጋጽ ዳታ ሪፈረሽ ይግበር።");
-            fetchAllBookings();
+            alert("ጌጋ ተፈጢሩ፡ በጃኹም ኢንተርነትኩም ፈትሹ።");
+            buttonElement.disabled = false;
+            buttonElement.innerText = newStatus;
         }
     }
 
     window.onload = fetchAllBookings;
 </script>
+
 </body>
 </html>
