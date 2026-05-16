@@ -5,38 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kingdom Hotel - Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
- <style>
-    :root { 
-       --dark-blue: #1a2a44; 
-       --gold: #702d8e; /* እዚ እቲ ልክዕ ናይ CBE ድሙቕ ወርቂ ሕብሪ እዩ */
-       --light-gray: #f4f4f4; 
-}
+    <style>
+        :root { 
+           --dark-blue: #1a2a44; 
+           --gold: #B8860B; /* ናይ CBE ድሙቕ ወርቂ ሕብሪ ተስተኻኺሉ ኣሎ */
+           --light-gray: #f4f4f4; 
+        }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--light-gray); }
         
- /* Sidebar & Header */
         header { 
-        background: var(--dark-blue); 
-        color: white; 
-        padding: 20px; 
-        text-align: center; 
-        border-bottom: 4px solid var(--gold); /* ናይ CBE ወርቂ መስመር */
-       box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-       }
+            background: var(--dark-blue); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            border-bottom: 4px solid var(--gold); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
 
-       .card { 
-        background: white; 
-        padding: 20px; 
-        border-radius: 10px; 
-        border-top: 4px solid var(--gold); /* ኣብ ክንዲ ጎኒ፡ ላዕሊ እንተኾነ ይርአ */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        text-align: center; 
-       }
         .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
         /* Stats Cards */
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: white; padding: 20px; border-radius: 10px; border-left: 5px solid var(--gold); box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 10px; border-top: 4px solid var(--gold); box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
         .card h3 { margin: 0; color: #555; font-size: 0.9rem; }
         .card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: var(--dark-blue); }
 
@@ -84,51 +75,53 @@
             <p id="revenue">0 ETB</p>
         </div>
     </div>
-    <div class="card" style="margin-top: 30px; text-align: center; border: 2px solid var(--gold); padding: 25px;">
-    <h3 style="color: var(--dark-blue); margin-bottom: 15px;">
-        <i class="fas fa-qrcode"></i> Kingdom Hotel Booking QR
-    </h3>
-    
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B" 
-         alt="Booking QR Code" 
-         style="border: 5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 10px;">
-    
-    <p style="margin-top: 15px; color: #555; font-weight: bold;">
-        ዓማዊል ነዚ ስካን ብምግባር ብቐጥታ ክምዝገቡ ይኽእሉ እዮም።
-    </p>
-    
-    <div style="margin-top: 15px;">
-        <button onclick="window.open('https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B', '_blank')" 
-                class="btn view-receipt">
-            <i class="fas fa-download"></i> ንምሕታም ኣዕብዮ (High Quality)
-        </button>
-    </div>
-</div>
 
-    <button onclick="fetchAllBookings()" class="btn view-receipt"><i class="fas fa-sync"></i> Refresh Data</button>
-    <div class="card" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">
-    <div>
-        <label>ካብ (Start):</label>
-        <input type="date" id="startDate" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+    <div class="card" style="margin-top: 30px; text-align: center; border: 2px solid var(--gold); padding: 25px; border-radius: 10px;">
+        <h3 style="color: var(--dark-blue); margin-bottom: 15px;">
+            <i class="fas fa-qrcode"></i> Kingdom Hotel Booking QR
+        </h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B" 
+             alt="Booking QR Code" 
+             style="border: 5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 10px;">
+        <p style="margin-top: 15px; color: #555; font-weight: bold;">
+            ዓማዊል ነዚ ስካን ብምግባር ብቐጥታ ክምዝገቡ ይኽእሉ እዮም።
+        </p>
+        <div style="margin-top: 15px;">
+            <button onclick="window.open('https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B', '_blank')" 
+                    class="btn view-receipt">
+                <i class="fas fa-download"></i> ንምሕታም ኣዕብዮ (High Quality)
+            </button>
+        </div>
     </div>
-    <div>
-        <label>ክሳብ (End):</label>
-        <input type="date" id="endDate" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
-    </div>
-    <button onclick="filterByDate()" class="btn view-receipt" style="margin-top: 20px;">ሪፖርት ኣውጽእ</button>
-</div>
 
- <div style="margin: 15px 0;">
-    <input type="text" id="searchInput" onkeyup="filterBookings()" placeholder="ብሽም ዓሚል ፈልግ..." 
-    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-</div>
+    <div style="margin-top: 20px;">
+        <button onclick="fetchAllBookings()" class="btn view-receipt"><i class="fas fa-sync"></i> Refresh Data</button>
+    </div>
+
+    <div class="card" style="margin-top: 20px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">
+        <div>
+            <label>ካብ (Start):</label>
+            <input type="date" id="startDate" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+        </div>
+        <div>
+            <label>ክሳብ (End):</label>
+            <input type="date" id="endDate" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+        </div>
+        <button onclick="filterByDate()" class="btn view-receipt" style="margin-top: 5px;">ሪፖርት ኣውጽእ</button>
+    </div>
+
+    <div style="margin: 15px 0;">
+        <input type="text" id="searchInput" onkeyup="filterBookings()" placeholder="ብሽም፡ ስልኪ ወይ ዓይነት ክፍሊ ፈልግ..." 
+               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
+    </div>
+
     <table>
         <thead>
             <tr>
                 <th>ዓሚል (Name)</th>
                 <th>ክፍሊ (Room)</th>
                 <th>phone (ስልኪ)</th>
-                <th>መእተዊ/መውጽኢ</th>
+                <th>መእተዊ/መውጽኢ (Dates)</th>
                 <th>ሪሲት</th>
                 <th>Status</th>
                 <th>ተግባር (Action)</th>
@@ -138,8 +131,9 @@
         </tbody>
     </table>
 </div>
+
 <script>
-    // ናትካ Web App URL (እቲ ሓድሽ Deployment URL ምዃኑ ኣረጋግጽ)
+    // ናትካ Web App URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylmt4aMPWcO2h9SEMC3xhvyyO8TNEWeewB3qdcA1VL8sqZGMTdDuclWWb72QCRglwV-g/exec";
     
     const roomPrices = {
@@ -150,118 +144,111 @@
 
     // 1. ኩሉ ዳታ ካብ Google Sheet ንምምጻእ
     async function fetchAllBookings() {
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>ይጽዓን ኣሎ...</td></tr>";
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>ይጽዓን ኣሎ...</td></tr>";
 
-    // --- ሓድሽ Reset Logic: ነቶም ሪፖርት መምረጺታት ባዶ ይገብሮም ---
-    if (document.getElementById("startDate")) document.getElementById("startDate").value = "";
-    if (document.getElementById("endDate")) document.getElementById("endDate").value = "";
-    if (document.getElementById("searchInput")) document.getElementById("searchInput").value = "";
-    // --------------------------------------------------------
+        if (document.getElementById("startDate")) document.getElementById("startDate").value = "";
+        if (document.getElementById("endDate")) document.getElementById("endDate").value = "";
+        if (document.getElementById("searchInput")) document.getElementById("searchInput").value = "";
 
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
-        const bookings = await response.json();
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getAllBookings`);
+            const bookings = await response.json();
 
-        window.allBookingsData = bookings; 
+            window.allBookingsData = bookings; 
 
-        tbody.innerHTML = "";
-        let totalRevenue = 0;
-        let pending = 0;
+            tbody.innerHTML = "";
+            let totalRevenue = 0;
+            let pending = 0;
 
-        [...bookings].reverse().forEach(book => {
-            const currentStatus = book.status || 'Pending'; //
-            
-            if (currentStatus === "Confirmed") {
-                const start = new Date(book.checkIn);
-                const end = new Date(book.checkOut);
-                const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
-                totalRevenue += ((roomPrices[book.room] || 0) * diffDays);
-            }
+            [...bookings].reverse().forEach(book => {
+                const currentStatus = book.status || 'Pending';
+                
+                if (currentStatus === "Confirmed") {
+                    const start = new Date(book.checkIn);
+                    const end = new Date(book.checkOut);
+                    const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
+                    totalRevenue += ((roomPrices[book.room] || 0) * diffDays);
+                }
 
-            if (currentStatus === "Pending") pending++;
+                if (currentStatus === "Pending") pending++;
 
-            const isDisabled = (currentStatus === "Confirmed" || currentStatus === "Cancelled") ? "disabled" : "";
+                const isDisabled = (currentStatus === "Confirmed" || currentStatus === "Cancelled") ? "disabled" : "";
 
-            const row = `
-                <tr>
-                    <td><strong>${book.name}</strong><br><small>${book.timestamp || ''}</small></td>
-                    <td>${book.room}</td>
-                    <td>${book.checkIn} - ${book.checkOut}</td>
-                    <td>
-                        ${book.receipt ? `<a href="${book.receipt}" target="_blank" class="btn view-receipt"><i class="fas fa-image"></i> View</a>` : 'No Receipt'}
-                    </td>
-                    <td><span class="status-badge ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
-                    <td>
-                        <button class="btn confirm-btn" 
-                                onclick="updateStatus(${book.row}, 'Confirmed', this)" 
-                                ${isDisabled}>Confirm</button>
-                        <button class="btn cancel-btn" 
-                                onclick="updateStatus(${book.row}, 'Cancelled', this)" 
-                                ${isDisabled}>Cancel</button>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
+                // *** ዓምድታት (Columns) ተጸራርዮም 7 በጺሖም ኣለዉ ***
+                const row = `
+                    <tr>
+                        <td><strong>${book.name}</strong><br><small>${book.timestamp || ''}</small></td>
+                        <td>${book.room}</td>
+                        <td>${book.phone || '<span style="color:#aaa;">No Phone</span>'}</td>
+                        <td><small>In:</small> ${book.checkIn}<br><small>Out:</small> ${book.checkOut}</td>
+                        <td>
+                            ${book.receipt ? `<a href="${book.receipt}" target="_blank" class="btn view-receipt" style="padding:4px 8px; font-size:0.8rem;"><i class="fas fa-image"></i> View</a>` : '<span style="color:#aaa;">No Receipt</span>'}
+                        </td>
+                        <td><span class="status-badge ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
+                        <td>
+                            <button class="btn confirm-btn" style="padding:4px 8px; font-size:0.8rem;"
+                                    onclick="updateStatus(${book.row}, 'Confirmed', this)" 
+                                    ${isDisabled}>Confirm</button>
+                            <button class="btn cancel-btn" style="padding:4px 8px; font-size:0.8rem;"
+                                    onclick="updateStatus(${book.row}, 'Cancelled', this)" 
+                                    ${isDisabled}>Cancel</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
 
-        document.getElementById("totalCount").innerText = bookings.length;
-        document.getElementById("pendingCount").innerText = pending;
-        
-        // ነቲ Revenue ናብቲ ጠቕላላ ኣታዊ (Total) ይመልሶ
-        document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB";
+            document.getElementById("totalCount").innerText = bookings.length;
+            document.getElementById("pendingCount").innerText = pending;
+            document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB";
 
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        tbody.innerHTML = "<tr><td colspan='6' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
-    }
-}
-
-function filterByDate() {
-    const startStr = document.getElementById("startDate").value;
-    const endStr = document.getElementById("endDate").value;
-    
-    if (!startStr || !endStr) {
-        alert("በጃኹም ክልቲኡ ዕለታት ምልኡ!");
-        return;
-    }
-
-    const startDate = new Date(startStr);
-    const endDate = new Date(endStr);
-    endDate.setHours(23, 59, 59); // ክሳብ መወዳእታ እቲ ዕለት ንምቁጻር
-
-    const table = document.getElementById("tableBody");
-    const tr = table.getElementsByTagName("tr");
-    let filteredRevenue = 0;
-
-    for (let i = 0; i < tr.length; i++) {
-        // ኣብቲ 'window.allBookingsData' ዘሎ ዳታ ንጥቀም (Reverse ስለ ዝኾነ Index ንጥንቀቕ)
-        const bookings = [...window.allBookingsData].reverse();
-        const book = bookings[i];
-        const checkInDate = new Date(book.checkIn);
-
-        // እቲ ምዝገባ ኣብ መንጎ እቲ ዝተመርጸ ዕለታት እንተሃሊዩ
-        if (checkInDate >= startDate && checkInDate <= endDate) {
-            tr[i].style.display = "";
-            
-            // ነቲ Revenue ጥራይ ድማ ንጸብጽቦ (Confirmed እንተኾይኑ ጥራይ)
-            if (book.status === "Confirmed") {
-                const start = new Date(book.checkIn);
-                const end = new Date(book.checkOut);
-                const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
-                filteredRevenue += ((roomPrices[book.room] || 0) * diffDays);
-            }
-        } else {
-            tr[i].style.display = "none";
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን።</td></tr>";
         }
     }
 
-    // ነቲ ኣብ ላዕሊ ዘሎ Revenue Card ንግዚኡ ንቀይሮ
-    document.getElementById("revenue").innerText = filteredRevenue.toLocaleString() + " ETB (ሪፖርት)";
-    alert("ናይቲ ዝመረጽካዮ ዕለት ሪፖርት ተዳልዩ ኣሎ።");
-}
+    function filterByDate() {
+        const startStr = document.getElementById("startDate").value;
+        const endStr = document.getElementById("endDate").value;
+        
+        if (!startStr || !endStr) {
+            alert("በጃኹም ክልቲኡ ዕለታት ምልኡ!");
+            return;
+        }
 
-    // 2. Status ንምቕያር (Confirm/Cancel) + ኢመይል ንምስዳድ
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
+        endDate.setHours(23, 59, 59);
+
+        const table = document.getElementById("tableBody");
+        const tr = table.getElementsByTagName("tr");
+        let filteredRevenue = 0;
+
+        for (let i = 0; i < tr.length; i++) {
+            const bookings = [...window.allBookingsData].reverse();
+            const book = bookings[i];
+            const checkInDate = new Date(book.checkIn);
+
+            if (checkInDate >= startDate && checkInDate <= endDate) {
+                tr[i].style.display = "";
+                
+                if (book.status === "Confirmed") {
+                    const start = new Date(book.checkIn);
+                    const end = new Date(book.checkOut);
+                    const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
+                    filteredRevenue += ((roomPrices[book.room] || 0) * diffDays);
+                }
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+
+        document.getElementById("revenue").innerText = filteredRevenue.toLocaleString() + " ETB (ሪፖርት)";
+        alert("ናይቲ ዝመረጽካዮ ዕለት ሪፖርት ተዳልዩ ኣሎ።");
+    }
+
     async function updateStatus(row, newStatus, buttonElement) {
         const bookings = window.allBookingsData || [];
         const currentBooking = bookings.find(b => b.row === row);
@@ -291,7 +278,6 @@ function filterByDate() {
 
             alert(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ ${newStatus} ኢመይል ክበጽሖ እዩ።`);
             
-            // UI ብኡንብኡ ሪፈረሽ ንምግባር
             setTimeout(() => {
                 fetchAllBookings(); 
             }, 1000);
@@ -303,34 +289,33 @@ function filterByDate() {
             buttonElement.innerText = newStatus;
         }
     }
-// Search Bar Logic
-// Search Bar Logic (ብስም ይኹን ብስልኪ ንምድላይ)
-function filterBookings() {
-    const input = document.getElementById("searchInput");
-    const filter = input.value.toLowerCase();
-    const table = document.getElementById("tableBody");
-    const tr = table.getElementsByTagName("tr");
 
-    for (let i = 0; i < tr.length; i++) {
-        // እቲ ስምን ስልክን ዘለዎ Column 0 (Name & Timestamp/Phone) እዩ
-        const nameColumn = tr[i].getElementsByTagName("td")[0];
-        // ዓይነት ክፍሊ ዘለዎ Column 1 እዩ
-        const roomColumn = tr[i].getElementsByTagName("td")[1];
+    function filterBookings() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById("tableBody");
+        const tr = table.getElementsByTagName("tr");
 
-        if (nameColumn || roomColumn) {
-            const nameText = nameColumn.textContent || nameColumn.innerText;
-            const roomText = roomColumn.textContent || roomColumn.innerText;
-            
-            // እቲ ዝጸሓፍካዮ ጽሑፍ ምስ ስም፡ ስልኪ ወይ ዓይነት ክፍሊ እንተተመሳሲሉ የርእዮ
-            if (nameText.toLowerCase().indexOf(filter) > -1 || 
-                roomText.toLowerCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
+        for (let i = 0; i < tr.length; i++) {
+            const nameColumn = tr[i].getElementsByTagName("td")[0];
+            const roomColumn = tr[i].getElementsByTagName("td")[1];
+            const phoneColumn = tr[i].getElementsByTagName("td")[2];
+
+            if (nameColumn || roomColumn || phoneColumn) {
+                const nameText = nameColumn.textContent || nameColumn.innerText;
+                const roomText = roomColumn.textContent || roomColumn.innerText;
+                const phoneText = phoneColumn.textContent || phoneColumn.innerText;
+                
+                if (nameText.toLowerCase().indexOf(filter) > -1 || 
+                    roomText.toLowerCase().indexOf(filter) > -1 ||
+                    phoneText.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
         }
     }
-}
 
     window.onload = fetchAllBookings;
 </script>

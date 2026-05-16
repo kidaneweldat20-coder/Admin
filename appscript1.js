@@ -1,6 +1,6 @@
 /**
- * KINGDOM HOTEL - BACKEND SYSTEM (UPDATED & FIXED)
- * -----------------------------------------------
+ * KINGDOM HOTEL - BACKEND SYSTEM (FULLY FIXED & SYNCHRONIZED)
+ * -----------------------------------------------------------
  */
 
 function doPost(e) {
@@ -8,14 +8,13 @@ function doPost(e) {
   var sheet = ss.getSheetByName("Kingdom backend");
   var data = {};
 
-  // --- 1. ካብ ዝተፈላለዩ ፎርማታት (URL-encoded ወይ JSON) ዳታ ምውህሃድ ---
+  // --- 1. ካብ ዝተፈላለዩ ፎርማታት ዳታ ምውህሃድ ---
   if (e.parameter && e.parameter.action) {
     data = e.parameter;
   } else if (e.postData && e.postData.contents) {
     try {
       data = JSON.parse(e.postData.contents);
     } catch (err) {
-      // ሓደ ሓደ ግዜ ጽሑፍ ኮይኑ ከም ፎርማት ዌብ ክመጽእ ከሎ ንምፍታሕ
       var raw = e.postData.contents;
       var pairs = raw.split('&');
       for (var i = 0; i < pairs.length; i++) {
@@ -30,14 +29,14 @@ function doPost(e) {
     var rowIndex = parseInt(data.row);
     var newStatus = data.status;
     
-    // Column H ማለት መበል 8 ዓንዲ እዩ (Status)
-    sheet.getRange(rowIndex, 8).setValue(newStatus); 
+    // Column I ማለት መበል 9 ዓንዲ እዩ (Status)። ቅድሚ ሕጂ 8 ኔሩ ሕጂ ናብ 9 ተቐይሩ ኣሎ።
+    sheet.getRange(rowIndex, 9).setValue(newStatus); 
     
     // ንዓሚል ሓበሬታ ንምልኣኽ ዳታ ምውሳድ
-    var rowData = sheet.getRange(rowIndex, 1, 1, 8).getValues()[0];
+    var rowData = sheet.getRange(rowIndex, 1, 1, 9).getValues()[0];
     var customerName = rowData[1];  // Column B
     var customerEmail = rowData[2]; // Column C
-    var roomType = rowData[3];      // Column D
+    var roomType = rowData[4];      // Column E (ክፍሊ)
 
     // ናይ Status ለውጢ ኢመይል ምስዳድ
     try {
@@ -54,14 +53,15 @@ function doPost(e) {
   // --- 3. ሓድሽ ምዝገባ ካብ ዓማውል (New Booking) ---
   if (data.name) {
     sheet.appendRow([
-      new Date(),      // A: Timestamp
-      data.name,       // B: Name
-      data.email,      // C: Email
-      data.room,       // D: Room type
-      data.receipt,    // E: Receipt link
-      data.checkIn,    // F: Check-in
-      data.checkOut,   // G: Check-out
-      "Pending"        // H: Status
+      new Date(),          // A: Timestamp
+      data.name,           // B: Name
+      data.email,          // C: Email
+      data.phone || "",    // D: Phone Number (እዚ ተወሲኹ ዘሎ)
+      data.room,           // E: Room type
+      data.receipt,        // F: Receipt link
+      data.checkIn,        // G: Check-in
+      data.checkOut,       // H: Check-out
+      "Pending"            // I: Status
     ]);
 
     // ናይ መጀመርታ "ምዝገባ ተቐቢልናዮ ኣለና" ዝብል ኢመይል
@@ -91,19 +91,20 @@ function doGet(e) {
     var bookings = [];
     
     for (var i = 1; i < data.length; i++) {
-      // እንተደኣ እቲ መስመር ባዶ ኾይኑ ንከይወስዶ
-      if (!data[i][1]) continue; 
+      if (!data[i][1]) continue; // እንተደኣ ስም ባዶ ኾይኑ ንከይወስዶ
       
+      // *** ዚ እዩ እቲ ቀንዲ መዐረዪ! Index-ታት ምስቲ Sheet ተሰማሚዖም ኣለዉ ***
       bookings.push({
         row: i + 1, 
         timestamp: data[i][0] ? Utilities.formatDate(new Date(data[i][0]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd HH:mm") : "", 
-        name: data[i][1], 
-        email: data[i][2],
-        room: data[i][3], 
-        receipt: data[i][4], 
-        checkIn: data[i][5] ? Utilities.formatDate(new Date(data[i][5]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "", 
-        checkOut: data[i][6] ? Utilities.formatDate(new Date(data[i][6]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "",
-        status: data[i][7] || "Pending"
+        name: data[i][1],       // B
+        email: data[i][2],      // C
+        phone: data[i][3],      // D (ቅድሚ ሕጂ ተረሲዑ ዝነበረ)
+        room: data[i][4],       // E
+        receipt: data[i][5],    // F
+        checkIn: data[i][6] ? Utilities.formatDate(new Date(data[i][6]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "",   // G
+        checkOut: data[i][7] ? Utilities.formatDate(new Date(data[i][7]), ss.getSpreadsheetTimeZone(), "yyyy-MM-dd") : "", // H
+        status: data[i][8] || "Pending" // I
       });
     }
     return ContentService.createTextOutput(JSON.stringify(bookings))
@@ -115,7 +116,6 @@ function doGet(e) {
   var checkIn = new Date(e.parameter.checkIn);
   var checkOut = new Date(e.parameter.checkOut);
   
-  // ካብ Inventory Sheet ጠቕላላ ብዝሒ ክፍልታት ምርካብ
   var inventorySheet = ss.getSheetByName("Inventory");
   if (!inventorySheet) {
     return ContentService.createTextOutput(JSON.stringify({ "error": "Inventory sheet not found" })).setMimeType(ContentService.MimeType.JSON);
@@ -130,19 +130,16 @@ function doGet(e) {
     } 
   }
 
-  // ሕጂ ተታሒዞም ዘለዉ ክፍልታት ምቑጻር
   var currentBookings = sheet.getDataRange().getValues();
   var count = 0;
   for (var j = 1; j < currentBookings.length; j++) {
-    var bStatus = currentBookings[j][7] || "Pending";
+    var bStatus = currentBookings[j][8] || "Pending"; // ዓምዲ 9 (Index 8)
 
-    // ዝተሰረዙ (Cancelled) ከይቆጽሮም
     if (bStatus === "Cancelled") continue; 
 
-    if (currentBookings[j][3] === room) {
-      var bIn = new Date(currentBookings[j][5]);
-      var bOut = new Date(currentBookings[j][6]);
-      // ዕለታት ዝደራረቡ እንተኾይኖም
+    if (currentBookings[j][4] === room) { // ዓምዲ E (Index 4)
+      var bIn = new Date(currentBookings[j][6]);  // ዓምዲ G
+      var bOut = new Date(currentBookings[j][7]); // ዓምዲ H
       if (checkIn < bOut && checkOut > bIn) count++;
     }
   }
@@ -154,7 +151,6 @@ function doGet(e) {
 }
 
 // --- ኢመይል ዝሰድዱ Functions ---
-
 function sendConfirmationEmail(customerEmail, customerName, roomType, checkIn, checkOut) {
   var subject = "Kingdom Hotel - Booking Received";
   var body = "ሰላም " + customerName + ",\n\n" +
@@ -171,7 +167,7 @@ function sendStatusEmail(email, name, room, status) {
   var subject = "Update: Your Booking at Kingdom Hotel - " + status;
   var statusMsg = (status === "Confirmed") ? 
       "ምዝገባኹም ተረጋጊጹ ኣሎ (Confirmed)! ብደሓን ምጹ።" : 
-      "ይቕሬታ፡ ምዝገባኹም ተሰሪዙ ኣሎ (Cancelled)። ንተወሳኺ ሓበሬታ ብኢመይል ወይ ብስልኪ ተወከሱና።";
+      "ይቕሬታ፡ ምዝገባኹም ተሰሪዙ ኣሎ (Cancelled)። ንተወሳኺ ሓበሬታ ብኢመይል ወይ ብስልኪ ተወከሱና।";
 
   var body = "ሰላም " + name + ",\n\n" +
              statusMsg + "\n\n" +
