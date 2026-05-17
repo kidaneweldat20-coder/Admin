@@ -1,8 +1,9 @@
 /* ==========================================================================
-   👑 KINGDOM HOTEL - ADMIN DASHBOARD JAVASCRIPT (FULLY OPTIMIZED)
+   👑 KINGDOM HOTEL - ADMIN DASHBOARD JAVASCRIPT (FULLY OPTIMIZED & FIXED)
    ========================================================================== */
 
-const SCRIPT_URL = "‎https://script.google.com/macros/s/AKfycbxET7X5eFqm1IxtbcR36YkJhtpeIBDrV-qNow4d3vo4UGru7wULWZ-A9jcT9jY3C_KxSQ/exec";
+// 🛠️ ፊክስ: እቲ ሕቡእ Character ዝነበሮ URL ጽሩይ ተገይሩ ኣሎ
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxET7X5eFqm1IxtbcR36YkJhtpeIBDrV-qNow4d3vo4UGru7wULWZ-A9jcT9jY3C_KxSQ/exec";
     
 const roomPrices = {
     "Single Room": 1250,
@@ -41,7 +42,6 @@ async function fetchAllBookings() {
     const tbody = document.getElementById("tableBody");
     if (!tbody) return;
     
-    // 👇 እዛ መስመር እዚኣ ተቐይራ ኣላ (class="loading-row" ተወሲኽዋ)
     tbody.innerHTML = "<tr><td colspan='7' class='loading-row'><i class='fas fa-spinner fa-spin'></i> ይጽዓን ኣሎ...</td></tr>";
 
     if (document.getElementById("startDate")) document.getElementById("startDate").value = "";
@@ -60,9 +60,10 @@ async function fetchAllBookings() {
 
     } catch (error) {
         console.error("Fetch Error:", error);
-        tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን። ሞክሩ።</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>ዳታ ክመጽእ ኣይከኣለን። ኢንተርነትኩም ፈትሽኹም ደጊምኩም ፈትኑ።</td></tr>";
     }
 }
+
 // 🛠️ ነቲ ሰሌዳን ናይ ላዕሊ ካርዳትን (Cards) ፍጹም ብዘይ ምድግጋምን ብትኽክልን ንምስኣል
 function renderTable(bookingsToShow, isFiltering = false) {
     const tbody = document.getElementById("tableBody");
@@ -73,7 +74,6 @@ function renderTable(bookingsToShow, isFiltering = false) {
     let totalRevenue = 0;
     let pendingCount = 0;
 
-    // ሀ. መጸብጸቢ ሎጂክ (ኩሉ ግዜ ብትኽክል ይጽብጽብ)
     bookingsToShow.forEach(book => {
         const currentStatus = book.status || 'Pending';
         if (currentStatus === "Pending") pendingCount++;
@@ -85,7 +85,6 @@ function renderTable(bookingsToShow, isFiltering = false) {
         }
     });
 
-    // ናይ ላዕሊ ካርዳት ቁጽሪ ምቕያር (Total Bookings, Pending, Revenue)
     document.getElementById("totalCount").innerText = bookingsToShow.length;
     document.getElementById("pendingCount").innerText = pendingCount;
     
@@ -95,13 +94,11 @@ function renderTable(bookingsToShow, isFiltering = false) {
         document.getElementById("revenue").innerText = totalRevenue.toLocaleString() + " ETB (ሪፖርት)";
     }
 
-    // ለ. 🔍 ሓድሽ ፊክስ: ዳታ ምስ ዘይርከብ ንምድላይን ዕለትን ብሓባር ዝሰርሕ
     if (bookingsToShow.length === 0) {
-        tbody.innerHTML = `<tr><td colspan='7' class='no-data-row'><i class='fas fa-exclamation-triangle'></i> መዘኻኸሪ: ኣብዚ ዝመረጽካዮ ዕለት ወይ ሽም ዝተረኽበ ዳታ የለን!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan='7' style='text-align:center; padding: 20px; color: #777;'><i class='fas fa-exclamation-triangle'></i> ኣብዚ ዝመረጽካዮ ዕለት ወይ ሽም ዝተረኽበ ዳታ የለን!</td></tr>`;
         return;
     }
 
-    // ሐ. እቲ ዳታ ኣብቲ ሰሌዳ ንምስኣል
     bookingsToShow.forEach(book => {
         const currentStatus = book.status || 'Pending';
         const isDisabled = (currentStatus === "Confirmed" || currentStatus === "Cancelled") ? "disabled" : "";
@@ -113,14 +110,14 @@ function renderTable(bookingsToShow, isFiltering = false) {
                 <td>${book.phone && book.phone !== "No Phone" ? book.phone : '<span style="color:#aaa;">No Phone</span>'}</td>
                 <td><small>In:</small> ${book.checkIn ? book.checkIn.split('T')[0] : ''}<br><small>Out:</small> ${book.checkOut ? book.checkOut.split('T')[0] : ''}</td>
                 <td>
-                    ${book.receipt && book.receipt !== "No Image" ? `<a href="${book.receipt}" target="_blank" class="btn view-receipt-btn"><i class="fas fa-image"></i> View</a>` : '<span style="color:#aaa;">No Receipt</span>'}
+                    ${book.receipt && book.receipt !== "No Image" ? `<a href="${book.receipt}" target="_blank" class="btn view-receipt-btn" style="padding: 4px 8px; font-size:12px; background:#4A154B; color:white; text-decoration:none; border-radius:4px;"><i class="fas fa-image"></i> View</a>` : '<span style="color:#aaa;">No Receipt</span>'}
                 </td>
                 <td><span class="status-badge ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
                 <td>
-                    <button class="btn table-confirm-btn" 
+                    <button class="btn table-confirm-btn" style="background:#2ecc71; color:white; border:none; padding:5px 8px; cursor:pointer; border-radius:4px;"
                             onclick="updateStatus(${book.row}, 'Confirmed', this)" 
                             ${isDisabled}>Confirm</button>
-                    <button class="btn table-cancel-btn" 
+                    <button class="btn table-cancel-btn" style="background:#e74c3c; color:white; border:none; padding:5px 8px; cursor:pointer; border-radius:4px;"
                             onclick="updateStatus(${book.row}, 'Cancelled', this)" 
                             ${isDisabled}>Cancel</button>
                 </td>
@@ -179,18 +176,16 @@ function filterByDate() {
         if (startDate.getTime() === endDate.getTime()) {
             return checkInDate && checkInDate.getTime() === startDate.getTime();
         } else {
-            return checkInDate && checkInDate >= startDate && checkInDate < endDate;
+            // 🛠️ ፊክስ: እታ መወዳእታ ዕለት እውን ንክትሕወስ <= ተገይራ ኣላ
+            return checkInDate && checkInDate >= startDate && checkInDate <= endDate;
         }
     });
 
     renderTable(filteredBookings, true);
-    
-    // 👇 ኣብ ክንዲ alert() እዛ ሓዳሽ ፋንክሽን ተጸዊዓ ኣላ
     showCustomAlert(`ሪፖርት ካብ ${startStr} ክሳብ ${endStr} ተጻርዩ ኣሎ!`);
 }
-// ==========================================================================
-// 3. Status ኩነታት ንምቕያር (MODERN ACTION ALERT SYSTEM - NO MORE BROWSER POPUPS)
-// ==========================================================================
+
+// 3. Status ኩነታት ንምቕያር 
 function updateStatus(row, newStatus, buttonElement) {
     const confirmOverlay = document.getElementById("customConfirmOverlay");
     const confirmMessage = document.getElementById("confirmMessage");
@@ -199,20 +194,16 @@ function updateStatus(row, newStatus, buttonElement) {
 
     if (!confirmOverlay || !confirmMessage) return;
 
-    // 1. ነቲ መልእኽቲ ብቋንቋና ምቕያር (Custom Confirm Message)
     confirmMessage.innerText = `ነዚ ምዝገባ ናብ "${newStatus}" ክትቅይሮን ንዓሚል ናይ ኢመይል መልእኽቲ ክትሰደሉን ርግጸኛ ዲኻ?`;
-    confirmOverlay.style.display = "flex"; // ነቲ ሳጹን ምርኣይ
+    confirmOverlay.style.display = "flex"; 
 
-    // 2. 'ኣይፋል' (Cancel) እንተኢሉ ነቲ ሳጹን ዕጸዎ
     noBtn.onclick = function() {
         confirmOverlay.style.display = "none";
     };
 
-    // 3. 'እወ' (OK) እንተኢሉ ነቲ ዳታ ናብ API ይልእኮ
     yesBtn.onclick = async function() {
-        confirmOverlay.style.display = "none"; // ነቲ መሕተቲ ሳጹን ዕጸዎ
+        confirmOverlay.style.display = "none"; 
 
-        // ነታ ኣብ ሰሌዳ ዘላ ቡተን Loading ምልክት ግበረላ
         const originalText = buttonElement.innerText;
         buttonElement.innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
         buttonElement.disabled = true;
@@ -226,29 +217,21 @@ function updateStatus(row, newStatus, buttonElement) {
                 body: JSON.stringify(updateData)
             });
 
-            // 🛠️ ውቅብቲ ናይ ዓወት Toast ኣርኢ
-            showToast(
-                `ትእዛዝ ብዓወት ተሰዲዱ ኣሎ! ዓሚል ናይ "${newStatus}" ኢመይል ክበጽሖ እዩ።`, 
-                "success"
-            );
+            showToast(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ "${newStatus}" ኢመይል ክበጽሖ እዩ።`, "success");
             
-            // ድሕሪ 1.2 ሰከንድ ሰሌዳ ሪፍሬሽ ግበሮ
             setTimeout(() => {
                 fetchAllBookings(); 
-            }, 1200);
+            }, 1500);
 
         } catch (e) {
             console.error("Update Error:", e);
-            // 🛠️ ውቅብቲ ናይ ጌጋ Toast ኣርኢ
             showToast("ጌጋ ተፈጢሩ፡ በጃኹም ኢንተርነትኩም ፈትሹ።", "error");
-            
             buttonElement.disabled = false;
             buttonElement.innerText = originalText;
         }
     };
 }
 
-// 🔔 ንኡስ ፋንክሽን - ነቲ ዶክመንት ቶስት (Toast) ንምርኣይን ንምሕባእን
 function showToast(message, type = "success") {
     const toast = document.getElementById("toastNotification");
     const toastMsg = document.getElementById("toastMessage");
@@ -259,23 +242,21 @@ function showToast(message, type = "success") {
     toastMsg.innerText = message;
 
     if (type === "error") {
-        toast.classList.add("error-toast");
+        toast.style.background = "#e74c3c";
         toastIcon.className = "fas fa-exclamation-circle";
     } else {
-        toast.classList.remove("error-toast");
+        toast.style.background = "#2ecc71";
         toastIcon.className = "fas fa-check-circle";
     }
 
-    // ቶስት ንምርኣይ
     toast.classList.add("show");
 
-    // ድሕሪ 3.5 ሰከንድ ባዕሉ ክጠፍእ
     setTimeout(() => {
         toast.classList.remove("show");
     }, 3500);
 }
 
-// 4. Search Filter (ምድላይ - 100% ፊክስ ዝኾነ ንጽሑፍን ቁጽሪ ስልክን)
+// 4. Search Filter (ምድላይ)
 function filterBookings() {
     const input = document.getElementById("searchInput");
     if (!input) return;
@@ -286,8 +267,6 @@ function filterBookings() {
     const filtered = window.allBookingsData.filter(book => {
         const nameText = (book.name || "").toLowerCase();
         const roomText = (book.room || "").toLowerCase();
-        
-        // 🛠️ እታ ቀንዲ ፍታሕ: ቁጽሪ ስልኪ ናብ String (ጽሑፍ) ቀይርካ ምድላይ
         const phoneText = book.phone !== undefined && book.phone !== null ? String(book.phone).toLowerCase() : "";
         
         return nameText.includes(filter) || roomText.includes(filter) || phoneText.includes(filter);
@@ -317,12 +296,6 @@ function toggleTheme() {
 document.addEventListener("DOMContentLoaded", () => {
     setupDateListeners();
     
-    // 👇 ነቲ Search input ብተወሳኺ ኣብዚ ክከታተሎ ገይረዮ ኣለኹ (Double Insurance)
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-        searchInput.addEventListener("input", filterBookings);
-    }
-
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
         document.body.classList.add("dark-mode");
@@ -332,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fetchAllBookings();
 });
-// 🔔 ነቲ ሓድሽ ናይ ሪፖርት ሳጹን ንምክፋት
+
 function showCustomAlert(message) {
     const alertBox = document.getElementById("customAlert");
     const alertMsg = document.getElementById("customAlertMessage");
@@ -342,7 +315,6 @@ function showCustomAlert(message) {
     }
 }
 
-// ❌ ነቲ ሓድሽ ናይ ሪፖርት ሳጹን ንምዕጻው
 function closeCustomAlert() {
     const alertBox = document.getElementById("customAlert");
     if (alertBox) {
