@@ -98,6 +98,21 @@
         <button onclick="closeCustomAlert()" class="btn alert-close-btn">እሺ (OK)</button>
     </div>
 </div>
+<div id="customConfirmOverlay" class="confirm-overlay" style="display: none;">
+    <div class="confirm-box">
+        <div class="confirm-icon"><i class="fas fa-question-circle"></i></div>
+        <p id="confirmMessage">ነዚ ምዝገባ ክተረጋግጾ ርግጸኛ ዲኻ?</p>
+        <div class="confirm-buttons">
+            <button id="confirmYesBtn" class="confirm-btn-yes">እወ (OK)</button>
+            <button id="confirmNoBtn" class="confirm-btn-no">ኣይፋል (Cancel)</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastNotification" class="toast-notification">
+    <i id="toastIcon" class="fas fa-check-circle"></i>
+    <span id="toastMessage">ትእዛዝ ተፈጺሙ ኣሎ!</span>
+</div>
 
 <script src="admin.js"></script>
 </body>

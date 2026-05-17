@@ -188,34 +188,91 @@ function filterByDate() {
     // 👇 ኣብ ክንዲ alert() እዛ ሓዳሽ ፋንክሽን ተጸዊዓ ኣላ
     showCustomAlert(`ሪፖርት ካብ ${startStr} ክሳብ ${endStr} ተጻርዩ ኣሎ!`);
 }
-// 3. Status ኩነታት ንምቕያር
-async function updateStatus(row, newStatus, buttonElement) {
-    if (!confirm(`ነዚ ምዝገባ ናብ ${newStatus} ክትቅይሮን ንዓሚል ኢመይል ክትሰደሉን ርግጸኛ ዲኻ?`)) return;
+// ==========================================================================
+// 3. Status ኩነታት ንምቕያር (MODERN ACTION ALERT SYSTEM - NO MORE BROWSER POPUPS)
+// ==========================================================================
+function updateStatus(row, newStatus, buttonElement) {
+    const confirmOverlay = document.getElementById("customConfirmOverlay");
+    const confirmMessage = document.getElementById("confirmMessage");
+    const yesBtn = document.getElementById("confirmYesBtn");
+    const noBtn = document.getElementById("confirmNoBtn");
 
-    buttonElement.innerText = "...";
-    buttonElement.disabled = true;
+    if (!confirmOverlay || !confirmMessage) return;
 
-    try {
-        const updateData = { action: "updateStatus", row: row, status: newStatus };
+    // 1. ነቲ መልእኽቲ ብቋንቋና ምቕያር (Custom Confirm Message)
+    confirmMessage.innerText = `ነዚ ምዝገባ ናብ "${newStatus}" ክትቅይሮን ንዓሚል ናይ ኢመይል መልእኽቲ ክትሰደሉን ርግጸኛ ዲኻ?`;
+    confirmOverlay.style.display = "flex"; // ነቲ ሳጹን ምርኣይ
 
-        await fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors", 
-            body: JSON.stringify(updateData)
-        });
+    // 2. 'ኣይፋል' (Cancel) እንተኢሉ ነቲ ሳጹን ዕጸዎ
+    noBtn.onclick = function() {
+        confirmOverlay.style.display = "none";
+    };
 
-        alert(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ ${newStatus} ኢመይል ክበጽሖ እዩ።`);
-        
-        setTimeout(() => {
-            fetchAllBookings(); 
-        }, 1200);
+    // 3. 'እወ' (OK) እንተኢሉ ነቲ ዳታ ናብ API ይልእኮ
+    yesBtn.onclick = async function() {
+        confirmOverlay.style.display = "none"; // ነቲ መሕተቲ ሳጹን ዕጸዎ
 
-    } catch (e) {
-        console.error("Update Error:", e);
-        alert("ጌጋ ተፈጢሩ፡ በጃኹም ኢንተርነትኩም ፈትሹ።");
-        buttonElement.disabled = false;
-        buttonElement.innerText = newStatus;
+        // ነታ ኣብ ሰሌዳ ዘላ ቡተን Loading ምልክት ግበረላ
+        const originalText = buttonElement.innerText;
+        buttonElement.innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
+        buttonElement.disabled = true;
+
+        try {
+            const updateData = { action: "updateStatus", row: row, status: newStatus };
+
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                body: JSON.stringify(updateData)
+            });
+
+            // 🛠️ ውቅብቲ ናይ ዓወት Toast ኣርኢ
+            showToast(
+                `ትእዛዝ ብዓወት ተሰዲዱ ኣሎ! ዓሚል ናይ "${newStatus}" ኢመይል ክበጽሖ እዩ።`, 
+                "success"
+            );
+            
+            // ድሕሪ 1.2 ሰከንድ ሰሌዳ ሪፍሬሽ ግበሮ
+            setTimeout(() => {
+                fetchAllBookings(); 
+            }, 1200);
+
+        } catch (e) {
+            console.error("Update Error:", e);
+            // 🛠️ ውቅብቲ ናይ ጌጋ Toast ኣርኢ
+            showToast("ጌጋ ተፈጢሩ፡ በጃኹም ኢንተርነትኩም ፈትሹ።", "error");
+            
+            buttonElement.disabled = false;
+            buttonElement.innerText = originalText;
+        }
+    };
+}
+
+// 🔔 ንኡስ ፋንክሽን - ነቲ ዶክመንት ቶስት (Toast) ንምርኣይን ንምሕባእን
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toastNotification");
+    const toastMsg = document.getElementById("toastMessage");
+    const toastIcon = document.getElementById("toastIcon");
+
+    if (!toast || !toastMsg || !toastIcon) return;
+
+    toastMsg.innerText = message;
+
+    if (type === "error") {
+        toast.classList.add("error-toast");
+        toastIcon.className = "fas fa-exclamation-circle";
+    } else {
+        toast.classList.remove("error-toast");
+        toastIcon.className = "fas fa-check-circle";
     }
+
+    // ቶስት ንምርኣይ
+    toast.classList.add("show");
+
+    // ድሕሪ 3.5 ሰከንድ ባዕሉ ክጠፍእ
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
 }
 
 // 4. Search Filter (ምድላይ - 100% ፊክስ ዝኾነ ንጽሑፍን ቁጽሪ ስልክን)

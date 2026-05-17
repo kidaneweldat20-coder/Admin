@@ -574,6 +574,125 @@ body.dark-mode .search-bar::placeholder {
 body.dark-mode .search-icon {
     color: #8a3b8b;
 }
+/* ==========================================================================
+   🚨 KINGDOM HOTEL - MODERN ACTION ALERT & TOAST SYSTEM
+   ========================================================================== */
+
+/* ሀ. ናይ Confirm መሕተቲ ሳጹን (Custom Confirmation Modal) */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px); /* ድሕሪኡ ዘሎ ብዥ ንምግባር */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.confirm-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body.dark-mode .confirm-box {
+    background: #1f2937;
+    color: #ffffff;
+    border: 1px solid #374151;
+}
+
+.confirm-icon {
+    font-size: 45px;
+    color: var(--cbe-gold);
+    margin-bottom: 15px;
+}
+
+.confirm-box p {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 22px;
+    line-height: 1.5;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.confirm-btn-yes {
+    background: var(--cbe-purple);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    transition: background 0.2s;
+}
+.confirm-btn-yes:hover { background: #5a1c5c; }
+
+.confirm-btn-no {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    transition: background 0.2s;
+}
+.confirm-btn-no:hover { background: #d1d5db; }
+
+body.dark-mode .confirm-btn-no {
+    background: #374151;
+    color: #f3f4f6;
+}
+body.dark-mode .confirm-btn-no:hover { background: #4b5563; }
+
+/* ለ. 🔔 ናይ ዓወት/ጌጋ መልእኽቲ (Modern Toast Notification) */
+.toast-notification {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    background: #10b981; /* ሓምላይ ንዓወት */
+    color: white;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10001;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast-notification.show {
+    transform: translateX(0);
+}
+
+.toast-notification.error-toast {
+    background: #ef4444; /* ቀይሕ ንጌጋ */
+}
+
+/* Animations */
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
 
 /* ==========================================================================
    9. Responsive (ናይ ሞባይል)
