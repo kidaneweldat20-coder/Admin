@@ -1,183 +1,586 @@
+/* ==========================================================================
+   1. ሉላዊ ተለዋዋጢ ሕብርታትን መሰረታዊ ንድፍን
+   ========================================================================== */
+:root { 
+   --cbe-purple: #4A154B;      /* ቀንዲ ሉኡል ናይ CBE ፖርፕል ሕብሪ */
+   --cbe-gold: #B8860B;        /* ወርቃዊ መለለዪ ሕብሪ */
+   --light-bg: #f5f7fa;        /* ድሕረ-ባይታ ሓመዳዊ */
+   --dark-text: #2c3e50;
+}
 
-    /* ==========================================================================
-       1. ሉላዊ ተለዋዋጢ ሕብርታትን መሰረታዊ ንድፍን (Global Variables & Base Styles)
-       ========================================================================== */
-    :root { 
-       --dark-blue: #1a2a44;   /* ቀንዲ ጥቁር ሰማያዊ ሕብሪ ድሕረ-ባይታ */
-       --gold: #5A1A5B;        /* ናይ CBE ድሙቕ ወርቂ ሕብሪ */
-       --light-gray: #f4f4f4;   /* ንስሱዕ ሓመዳዊ ሕብሪ ድሕረ-ባይታ */
-    }
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0; 
+    background: var(--light-bg); 
+    color: var(--dark-text);
+}
 
-    body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        margin: 0; 
-        background: var(--light-gray); 
-    }
-    
-    /* ==========================================================================
-       2. ናይ ላዕለዋይ ኣርእስቲ ክፋል (Header Section)
-       ========================================================================== */
-    header { 
-        background: var(--dark-blue); 
-        color: white; 
-        padding: 20px; 
-        text-align: center; 
-        border-bottom: 4px solid var(--gold); /* እታ ወርቃዊት መስመር */
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-    }
+/* ==========================================================================
+   2. Header ክፋል
+   ========================================================================== */
+header { 
+    background: var(--cbe-purple); 
+    color: white; 
+    padding: 22px 15px; 
+    text-align: center; 
+    border-bottom: 5px solid var(--cbe-gold); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+}
 
-    /* ቀንዲ መአከቢ ሳጹን (Main Wrapper Container) */
-    .container { 
-        max-width: 1200px; 
-        margin: 20px auto; 
-        padding: 20px; 
-        background: white; 
-        border-radius: 8px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-    }
-    
-    /* ==========================================================================
-       3. ናይ ቁጽሪ መረዳእታ ሳጹናት (Stats Cards Grid)
-       ========================================================================== */
-    .stats { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* ንኹሉ ፎን ሞባይልን ኮምፒተርን ባዕሉ ዝሰማማዕ */
-        gap: 20px; 
-        margin-bottom: 30px; 
-    }
+header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.5px;
+}
 
-    /* ነፍሲ-ወከፍ ናይ ቁጽሪ ሳጹን */
-    .card { 
-        background: white; 
-        padding: 20px; 
-        border-radius: 10px; 
-        border-bottom: 4px solid var(--gold); /* ናይ ታሕቲ ወርቃዊ መስመር */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        text-align: center; 
-    }
+.container { 
+    max-width: 1200px; 
+    margin: 25px auto; 
+    padding: 0 20px; 
+    box-sizing: border-box;
+}
 
-    .card h3 { 
-        margin: 0; 
-        color: #555; 
-        font-size: 0.9rem; 
-    }
+/* ==========================================================================
+   3. Stats Cards (ሳጹናት)
+   ========================================================================== */
+.stats { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 20px; 
+    margin-bottom: 25px; 
+}
 
-    .card p { 
-        margin: 10px 0 0; 
-        font-size: 1.8rem; 
-        font-weight: bold; 
-        color: var(--dark-blue); 
-    }
+.card { 
+    background: white; 
+    padding: 22px; 
+    border-radius: 12px; 
+    border-bottom: 4px solid var(--cbe-purple); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04); 
+    text-align: center; 
+    transition: transform 0.2s;
+}
 
-    /* ==========================================================================
-       4. ናይ ሰሌዳ ንድፊ (Table Style)
-       ========================================================================== */
-    table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 20px; 
-        font-size: 0.9rem; 
-    }
+.card:hover {
+    transform: translateY(-2px);
+}
 
-    /* ናይ ሰሌዳ ላዕለዋይ ዓንቀጽ (Table Header) */
-    th { 
-        background: var(--dark-blue); 
-        color: white; 
-        padding: 12px; 
-        text-align: left; 
-    }
+.card h3 { 
+    margin: 0; 
+    color: #666; 
+    font-size: 0.95rem; 
+    font-weight: 600;
+}
 
-    /* ናይ ሰሌዳ ውሽጣዊ ክፍልታት (Table Data cells) */
-    td { 
-        padding: 12px; 
-        border-bottom: 1px solid #ddd; 
-    }
+.card p { 
+    margin: 12px 0 0; 
+    font-size: 1.9rem; 
+    font-weight: bold; 
+    color: var(--cbe-purple); 
+}
 
-    /* ማውዝ ኣብ ልዕሊ እታ መስመር ክዓርፍ ከሎ ዝመጽእ ሕብሪ (Hover effect) */
-    tr:hover { 
-        background: #f9f9f9; 
-    }
+/* ==========================================================================
+   4. Date & Search Controls
+   ========================================================================== */
+.filter-box {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-bottom: 4px solid var(--cbe-gold);
+}
 
-    /* ==========================================================================
-       5. ናይ መቆጻጸሪ ቡተናት ንድፊ (Action Buttons)
-       ========================================================================== */
-    /* ሓፈሻዊ ናይ ቡተን ቅርጺ (Base Button Style) */
-    .btn { 
-        padding: 6px 12px; 
-        border: none; 
-        border-radius: 4px; 
-        cursor: pointer; 
-        font-weight: bold; 
-        text-decoration: none; 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 5px; 
-    }
+.filter-box input[type="date"] {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
 
-    /* Confirm (ሓረንጓደ) */
-    .confirm-btn { 
-        background: #28a745; 
-        color: white; 
-        margin-right: 5px; 
-    }
+.search-bar {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
 
-    /* Cancel (ቀይሕ) */
-    .cancel-btn { 
-        background: #dc3545; 
-        color: white; 
-    }
+.search-bar:focus {
+    border-color: var(--cbe-purple);
+    outline: none;
+}
 
-    /* View Receipt (ወርቃዊ) */
-    .view-receipt { 
-        background: var(--gold); 
-        color: white; 
-    }
-    .print{
-      background:#1a2a44;
-      color:white;
-    }
-    /* ቡተን ክዕጸው ከሎ (Disabled State) */
-    .btn:disabled { 
-        background: #ccc; 
-        cursor: not-allowed; 
-    }
-    
-    /* ==========================================================================
-       6. ናይ ኩነታት መለለዪ ምልክታት (Status Badges)
-       ========================================================================== */
-    .status-badge { 
-        padding: 4px 8px; 
-        border-radius: 12px; 
-        font-size: 0.8rem; 
-        font-weight: bold; 
-        text-transform: capitalize; 
-    }
+/* ==========================================================================
+   5. Buttons (ቡተናት)
+   ========================================================================== */
+.btn { 
+    padding: 8px 14px; 
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    font-size: 0.85rem;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px; 
+    transition: background 0.2s;
+}
 
-    /* ብጫ - ዝጻረ ዘሎ (Pending) */
-    .pending { 
-        background: #fff3cd; 
-        color: #856404; 
-    }
+.refresh-btn { background: var(--cbe-gold); color: white; }
+.refresh-btn:hover { background: #966f0a; }
 
-    /* ሓረንጓደ - ዝጸደቐ (Confirmed) */
-    .confirmed { 
-        background: #d4edda; 
-        color: #155724; 
-    }
+.action-filter-btn { background: var(--cbe-purple); color: white; }
+.action-filter-btn:hover { background: #350f36; }
 
-    /* ቀይሕ - ዝተሰረዘ (Cancelled) */
-    .cancelled { 
-        background: #f8d7da; 
-        color: #721c24; 
-    }
+.view-receipt-btn { background: var(--cbe-purple); color: white; padding: 4px 8px; font-size: 0.8rem;}
+.view-receipt-btn:hover { background: #350f36; }
 
-    /* ==========================================================================
-       7. ንሞባይል ንድፊ ምስንዳእ (Responsive Media Query)
-       ========================================================================== */
-    @media (max-width: 768px) {
-        /* ሰሌዳ ኣብ ጸቦብ ዝበሉ ibhL ሞባይላት ብጎኒ ንክንቀሳቐስ (Horizontal Scroll) */
-        table { 
-            display: block; 
-            overflow-x: auto; 
-        }
+.table-confirm-btn { background: #28a745; color: white; margin-right: 4px; padding: 5px 10px; }
+.table-confirm-btn:hover { background: #218838; }
+
+.table-cancel-btn { background: #dc3545; color: white; padding: 5px 10px; }
+.table-cancel-btn:hover { background: #c82333; }
+
+.print-btn { background: var(--cbe-purple); color: white; margin: 0 auto; }
+
+.btn:disabled { background: #ccc !important; cursor: not-allowed; color: #666; }
+
+/* ==========================================================================
+   6. Table (ሰሌዳ)
+   ========================================================================== */
+.table-wrapper {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 0.9rem; 
+}
+
+th { 
+    background: var(--cbe-purple); 
+    color: white; 
+    padding: 14px; 
+    text-align: left; 
+    font-weight: 600;
+}
+
+td { 
+    padding: 14px; 
+    border-bottom: 1px solid #eee; 
+    vertical-align: middle;
+}
+
+tr:hover { background: #fdfdfe; }
+
+.room-tag {
+    background: #edf2f7;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   7. Status Badges
+   ========================================================================== */
+.status-badge { 
+    padding: 5px 10px; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: bold; 
+    text-transform: capitalize; 
+    display: inline-block;
+}
+.pending { background: #fff3cd; color: #856404; }
+.confirmed { background: #d4edda; color: #155724; }
+.cancelled { background: #f8d7da; color: #721c24; }
+
+/* ==========================================================================
+   8. QR Section
+   ========================================================================== */
+.qr-section {
+    margin-top: 35px;
+    border: 2px dashed var(--cbe-gold);
+    background: #fff;
+}
+.qr-img {
+    border: 6px solid #fff; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    border-radius: 12px;
+    margin: 10px 0;
+}
+/* ==========================================================================
+   New: Search Bar Wrapper with Icon & Custom "No Data" Styling
+   ========================================================================== */
+
+/* ነቲ መደለዪ ሳጹንን Icon ን ብሓባር ንምሓዝ */
+.search-wrapper {
+    position: relative;
+    margin: 20px 0;
+    width: 100%;
+}
+
+/* እቲ መደለዪ ሳጹን (Search Bar) */
+.search-wrapper .search-bar {
+    width: 100%;
+    padding: 14px 15px 14px 45px; /* ነቲ icon ቦታ ንምሕዳግ ካብ ጸጋም 45px ርሕቀት */
+    border: 2px solid #e1e4e8;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+/* እቲ መደለዪ ምልክት (Icon) */
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cbe-purple); /* ሕብሩ ልክዕ ከም ናይ CBE Purple */
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+/* እቲ ሳጹን ክንጥውቆ ከለና ዝመጽእ ውቅያኖስ (Focus State) */
+.search-wrapper .search-bar:focus {
+    border-color: var(--cbe-purple);
+    box-shadow: 0 0 0 4px rgba(74, 21, 75, 0.15); /* ናይ ፖርፕል ድሙቕ ጽላል */
+    outline: none;
+}
+
+/* እቲ ሳጹን ክንጥውቆ ከለና እቲ Icon እውን ሕብሩ ንምቕያር */
+.search-wrapper .search-bar:focus + .search-icon {
+    color: var(--cbe-gold); /* ኣብ ዝጥወቐሉ እዋን ወርቃዊ ሕብሪ ይኸውን */
+}
+
+/* 🌟 ፍሉይ ሕብሪ ነቲ "ዝተረኽበ ዳታ የለን!" (No Data Found Row) */
+.no-data-row {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: #d9381e !important; /* መጠንቀቕታ ዝህብ ድሙቕ ቀይሕ/ኣራንሺ ሕብሪ */
+    background-color: #fff5f5; /* ልስሉስ ቀይሕ ድሕረ-ባይታ */
+    padding: 20px !important;
+    border: 1px dashed #feb2b2;
+}
+
+.no-data-row i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+/* ==========================================================================
+   🎨 PREMIUM MIDNIGHT DARK MODE DESIGN (REVISED)
+   ========================================================================== */
+
+/* 1. ንመቐያየሪት ቡተን ኣብ ርእሲ (Header) ንምስራዕ */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.theme-btn {
+    background: var(--cbe-gold);
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-btn:hover {
+    background: #e6a100;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(184, 134, 11, 0.4);
+}
+
+/* 🌙 ሓድሽ ዘመናዊ ናይ ጸልማት (Dark Mode) ዲዛይን */
+body.dark-mode {
+    --light-bg: #0b111e;      /* 🌌 ውቁብ ናይ መረን Midnight Blue-Dark */
+    --dark-text: #f3f4f6;     /* ብሩህ ጻዕዳ ጽሑፍ */
+    background-color: var(--light-bg);
+}
+
+/* 📦 እቶም ሳጹናት (Stats Cards & Table Wrappers) */
+body.dark-mode .card, 
+body.dark-mode .table-wrapper {
+    background: #111827 !important; /* ዝያዳ ጸሊም ሓመዳዊ */
+    border: 1px solid #1f293d !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ነቶም ዓበይቲ ቁጽሪታት ዝያዳ ብሩህ ንምግባር */
+body.dark-mode .card p {
+    color: #38bdf8 !important; /* ንእቶትን ቁጽርታትን ዝያዳ ህይወት ዝህብ Neon Blue ሕብሪ */
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+body.dark-mode .card h3 {
+    color: #9ca3af !important; /* ልስሉስ ሓመዳዊ ጽሑፍ ንመእተዊ */
+}
+
+/* 📊 ሰሌዳ (Table Styling in Dark Mode) */
+body.dark-mode table {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+}
+
+body.dark-mode th {
+    background: #1f2937 !important; /* ናይ ሰሌዳ ላዕለዋይ ክፋል */
+    color: #fff !important;
+    border-bottom: 2px solid #374151;
+}
+
+body.dark-mode td {
+    border-bottom: 1px solid #1f293d !important;
+    color: #d1d5db !important;
+    background: #111827 !important;
+}
+
+/* ሰሌዳ ሮው ምስ ዝንክእ (Hover Effect) */
+body.dark-mode tr:hover td {
+    background: #1f293d !important; /* ኣብ ዝትንከፈሉ እዋን ብሩህ ይኸውን */
+}
+
+/* 🏷️ ናይ ክፍልታት መለለዪ (Room Tag) */
+body.dark-mode .room-tag {
+    background: #1f293d !important;
+    color: #38bdf8 !important;
+    border: 1px solid #374151;
+}
+
+/* 🔍 መደለዪ ሳጹን (Search Bar Fix) */
+body.dark-mode .search-wrapper .search-bar {
+    background-color: #111827 !important;
+    border: 2px solid #1f293d !important;
+    color: #ffffff !important;
+}
+body.dark-mode .search-wrapper .search-bar:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+}
+body.dark-mode .search-wrapper .search-icon {
+    color: #9ca3af !important;
+}
+
+/* 📅 ናይ ዕለት መእተዊ ሳጹናት (Date Inputs) */
+body.dark-mode input[type="date"] {
+    background-color: #1f293d !important;
+    color: #ffffff !important;
+    border: 1px solid #374151 !important;
+}
+body.dark-mode .filter-box {
+    background: #111827 !important;
+    border-bottom: 4px solid var(--cbe-gold);
+}
+body.dark-mode .filter-box label {
+    color: #9ca3af !important;
+}
+
+/* 📱 ንእሽቶ ጽሑፋት (timestamps ወዘተ) */
+body.dark-mode td small {
+    color: #9ca3af !important;
+}
+
+/* 🧾 ናይ ሪሲት ምርኣዪ ቡተን (View Receipt Button) */
+body.dark-mode .view-receipt-btn {
+    background: #1f293d !important;
+    border: 1px solid #374151;
+    color: #e5e7eb !important;
+}
+body.dark-mode .view-receipt-btn:hover {
+    background: #374151 !important;
+    color: #fff !important;
+}
+
+/* ❌ ዝተረኽበ ዳታ የለን ዝብል መስመር (No Data Alert Row) */
+body.dark-mode .no-data-row {
+    background-color: #2d1a1a !important;
+    color: #f87171 !important;
+    border: 1px dashed #7f1d1d !important;
+}
+/* 👑 Kingdom Hotel Custom Alert CSS */
+.custom-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* ድሕሪኡ ዘሎ ጸልማት ንምግባር */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.custom-alert.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.custom-alert-content {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 400px;
+    width: 90%;
+    animation: slideDown 0.4s ease;
+}
+
+/* ናይ ጸልማት ሙድ (Dark Mode) ንምድጋፍ */
+body.dark-mode .custom-alert-content {
+    background: #222;
+    color: #fff;
+}
+
+.alert-icon {
+    font-size: 50px;
+    color: #4A154B; /* ናይ ሆቴልኩም ቀንዲ ሕብሪ (Purple) */
+    margin-bottom: 15px;
+}
+
+.custom-alert-content p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.alert-close-btn {
+    background: #4A154B;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.alert-close-btn:hover {
+    background: #622063;
+}
+
+/* ሳጹን ክመጽእ ከሎ ቁሩብ ንታሕቲ ሸተት ክብል */
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* 🟢 Kingdom Hotel Loading Row Style */
+.loading-row {
+    text-align: center;
+    color: #2e7d32 !important; /* ዱሙቕ ሓምላይ ሕብሪ (Elegant Green) */
+    font-size: 18px !important;  /* ቁሩብ ዓብዪ ንክኸውን */
+    font-weight: bold !important; /* ዱሙቕ (Bold) */
+    padding: 30px !important;    /* ካብ ላዕሊን ታሕቲን ጋፕ ንክህልዎ */
+    letter-spacing: 0.5px;
+}
+
+.loading-row i {
+    margin-right: 10px; /* ኣብ መንጎ እታ ምልክትን ጽሑፍን ጋፕ ንምፍጣር */
+    font-size: 20px;
+}
+/* 🔍 Kingdom Hotel Modern Search Bar CSS */
+.search-wrapper {
+    position: relative;
+    margin: 20px 0;
+    width: 100%;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 14px 16px 14px 45px; /* ነታ ምልክት ማግኒፋየር ቦታ ንምሕዳግ */
+    font-size: 16px;
+    border: 2px solid #4A154B; /* ናይ ሆቴልኩም ወናኒ ሕብሪ */
+    border-radius: 30px; /* ፍጹም ክቢ ንክኸውን (ልክዕ ከም ጎግል) */
+    background-color: #ffffff;
+    color: #333333;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(74, 21, 75, 0.08); /* ልስሉስ ጽላሎት */
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* ሰብ ክጽሕፍ ከሎ (Focus) ዝያዳ ክደምቕ */
+.search-bar:focus {
+    border-color: #622063;
+    box-shadow: 0 4px 15px rgba(74, 21, 75, 0.2);
+    background-color: #fff;
+}
+
+/* 🎨 ነቲ Placeholder (ውሽጣዊ ጽሑፍ) ንምውቃብ */
+.search-bar::placeholder {
+    color: #888888 !important; /* ዝያዳ ንጹር ሕብሪ */
+    font-size: 15px;
+    font-style: italic; /* ቁሩብ ሰጋእ ዝበለ ስታይል */
+    opacity: 0.8;
+}
+
+/* ናይ ጸልማት ሙድ (Dark Mode) ንምድጋፍ */
+body.dark-mode .search-bar {
+    background-color: #2d2d2d;
+    border-color: #8a3b8b;
+    color: #ffffff;
+}
+
+body.dark-mode .search-bar::placeholder {
+    color: #aaaaaa !important;
+}
+
+/* 📍 ነታ ናይ ምድላይ ምልክት (Search Icon) ልክዕ ማእከል ንምግባር */
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4A154B;
+    font-size: 16px;
+    pointer-events: none; /* ሰብ ክጽሕፍ ከሎ ከይዓናቅፎ */
+    transition: color 0.3s ease;
+}
+
+.search-bar:focus + .search-icon {
+    color: #622063; /* ሰብ ክጽሕፍ ከሎ ሕብሪ እታ ምልክት ክቕየር */
+}
+
+body.dark-mode .search-icon {
+    color: #8a3b8b;
+}
+
+/* ==========================================================================
+   9. Responsive (ናይ ሞባይል)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .table-wrapper { 
+        display: block; 
+        overflow-x: auto; 
     }
+}

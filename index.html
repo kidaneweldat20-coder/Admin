@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kingdom Hotel - Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-
 <header>
-    <h1><i class="fas fa-user-shield"></i> Kingdom Hotel Admin Dashboard</h1>
+    <div class="header-container">
+        <h1><i class="fas fa-user-shield"></i> Kingdom Hotel Admin Dashboard</h1>
+        <button id="themeToggle" class="theme-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i> Night Mode
+        </button>
+    </div>
 </header>
-
 <div class="container">
     <div class="stats">
         <div class="card">
@@ -21,66 +24,81 @@
         </div>
         <div class="card">
             <h3>Pending (ዝጻረ ዘሎ)</h3>
-            <p id="pendingCount" style="color: orange;">0</p>
+            <p id="pendingCount" style="color: #ff9800;">0</p>
         </div>
         <div class="card">
             <h3>Revenue (እቶት)</h3>
             <p id="revenue">0 ETB</p>
         </div>
     </div>
-    <div style="margin-top: 20px;">
-        <button onclick="fetchAllBookings()" class="btn view-receipt"><i class="fas fa-sync"></i> Refresh Data</button>
+
+    <div style="margin-top: 20px; text-align: left;">
+        <button onclick="fetchAllBookings()" class="btn refresh-btn">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
     </div>
 
-    <div class="card" style="margin-top: 20px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">
+    <div class="card filter-box">
         <div>
-          <label>ካብ (Start)➡</label>
-            <input type="date" id="startDate" style="padding: 8px; border-radius: 5px; border: 1px solid black;">
+            <label>ካብ (Start) ➡ </label>
+            <input type="date" id="startDate">
         </div>
         <div>
-            <label>ክሳብ (End)➡</label>
-            <input type="date" id="endDate" style="padding: 8px; border-radius: 5px; border: 1px solid black;">
+            <label>ክሳብ (End) ➡ </label>
+            <input type="date" id="endDate">
         </div>
-        <button onclick="filterByDate()" class="btn view-receipt" style="margin-top: 5px;">ሪፖርት ኣውጽእ</button>
+        <button onclick="filterByDate()" class="btn action-filter-btn">ሪፖርት ኣውጽእ</button>
     </div>
 
-    <div style="margin: 15px 0;">
-        <input type="text" id="searchInput" onkeyup="filterBookings()" placeholder="ብሽም፡ ስልኪ ወይ ዓይነት ክፍሊ ፈልግ..." 
-               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
+    <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" oninput="filterBookings()" placeholder="ብሽም፡ ስልኪ ወይ ዓይነት ክፍሊ ፈልግ..." class="search-bar">
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>ዓሚል (Name)</th>
-                <th>ክፍሊ (Room)</th>
-                <th>phone (ስልኪ)</th>
-                <th>መእተዊ/መውጽኢ (Dates)</th>
-                <th>ሪሲት</th>
-                <th>Status</th>
-                <th>ተግባር (Action)</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-        </tbody>
-    </table>
-</div>
-    <div class="card" style="margin-top: 30px; text-align: center; border: 2px solid var(--gold); padding: 25px; border-radius: 10px;">
-        <h3 style="color: var(--dark-blue); margin-bottom: 15px;">
-            <i class="fas fa-qrcode"></i> Kingdom Hotel Booking QR
-        </h3>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B" 
-             alt="Booking QR Code" 
-             style="border: 5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 10px;">
-        <p style="margin-top: 15px; color: #555; font-weight: bold;">
-            ዓማዊል ነዚ ስካን ብምግባር ብቐጥታ ክምዝገቡ ይኽእሉ እዮም።
-        </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ዓሚል (Name)</th>
+                    <th>ክፍሊ (Room)</th>
+                    <th>Phone (ስልኪ)</th>
+                    <th>መእተዊ/መውጽኢ (Dates)</th>
+                    <th>ሪሲት</th>
+                    <th>Status</th>
+                    <th>ተግባር (Action)</th>
+                </tr>
+            </thead>
+          <tbody id="tableBody">
+          <tr>
+        <td colspan='7' class="loading-row">
+            <i class="fas fa-spinner fa-spin"></i> ይጽዓን ኣሎ...
+        </td>
+    </tr>
+</tbody>
+
+        </table>
+    </div>
+
+    <div class="card qr-section">
+        <h3><i class="fas fa-qrcode"></i> Kingdom Hotel Booking QR</h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=4A154B" alt="Booking QR Code" class="qr-img">
+        <p>ዓማዊል ነዚ ስካን ብምግባር ብቐጥታ ክምዝገቡ ይኽእሉ እዮም።</p>
         <div style="margin-top: 15px;">
-            <button onclick="window.open('https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=B8860B', '_blank')" 
-                    class="print">
+            <button onclick="window.open('https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://kidaneweldat20-coder.github.io/kingdom/rooms.html&color=4A154B', '_blank')" class="btn print-btn">
                 <i class="fas fa-download"></i> ንምሕታም ኣዕብዮ (High Quality)
             </button>
         </div>
     </div>
+</div>
+<div id="customAlert" class="custom-alert hidden">
+    <div class="custom-alert-content">
+        <i class="
+        fas fa-check-circle alert-icon"></i>
+        <p id="customAlertMessage">ሪፖርት ብትኽክል ተጻርዩ ኣሎ!</p>
+        <button onclick="closeCustomAlert()" class="btn alert-close-btn">እሺ (OK)</button>
+    </div>
+</div>
+
 <script src="admin.js"></script>
 </body>
 </html>
