@@ -185,7 +185,7 @@ function filterByDate() {
     showCustomAlert(`ሪፖርት ካብ ${startStr} ክሳብ ${endStr} ተጻርዩ ኣሎ!`);
 }
 
-// 3. Status ኩነታት ንምቕያር 
+// 3. Status ኩነታት ንምቕያር (FIXED FOR APPS SCRIPT CORS & REDIRECTS)
 function updateStatus(row, newStatus, buttonElement) {
     const confirmOverlay = document.getElementById("customConfirmOverlay");
     const confirmMessage = document.getElementById("confirmMessage");
@@ -211,13 +211,14 @@ function updateStatus(row, newStatus, buttonElement) {
         try {
             const updateData = { action: "updateStatus", row: row, status: newStatus };
 
-            await fetch(SCRIPT_URL, {
+            // 🛠️ ፊክስ: CORS Error ንምውጋድን Apps Script ብግቡእ ዴታ ክቕበልን 'no-cors' ጠፊኡ ኣሎ
+            const response = await fetch(SCRIPT_URL, {
                 method: "POST",
-                mode: "no-cors", 
-                body: JSON.stringify(updateData)
+                body: JSON.stringify(updateData) // Apps Script ነዚ JSON.parse(e.postData.contents) ጌሩ የንብቦ
             });
 
-            showToast(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ "${newStatus}" ኢመይል ክበጽሖ እዩ።`, "success");
+            // 🛠️ Google Apps Script መብዛሕቱ ግዘ Redirect ስለ ዝገብር (302)፣ ኔትወርክ ሰክሰስ ምዃኑ ጥራይ ምርግጋፅ ይኣክል
+            showToast(`ትእዛዝ ተሰዲዱ ኣሎ! ዓሚል ናይ "${newStatus}" SMSን ኢመይልን ክበጽሖ እዩ።`, "success");
             
             setTimeout(() => {
                 fetchAllBookings(); 
