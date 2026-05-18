@@ -27,6 +27,10 @@
             <p id="pendingCount" style="color: #ff9800;">0</p>
         </div>
         <div class="card">
+            <h3>Cancelled (ዝተሰረዘ)</h3>
+            <p id="cancelledCount" style="color: #e74c3c;">0</p>
+        </div>
+        <div class="card">
             <h3>Revenue (እቶት)</h3>
             <p id="revenue">0 ETB</p>
         </div>
@@ -60,7 +64,7 @@
             <thead>
                 <tr>
                     <th>ዓሚል (Name)</th>
-                    <th>ክፍሊ (Room)</th>
+                    <th>ክфሊ (Room)</th>
                     <th>Phone (ስልኪ)</th>
                     <th>መእተዊ/መውጽኢ (Dates)</th>
                     <th>ሪሲት</th>
@@ -68,14 +72,13 @@
                     <th>ተግባር (Action)</th>
                 </tr>
             </thead>
-          <tbody id="tableBody">
-          <tr>
-        <td colspan='7' class="loading-row">
-            <i class="fas fa-spinner fa-spin"></i> ይጽዓን ኣሎ...
-        </td>
-    </tr>
-</tbody>
-
+            <tbody id="tableBody">
+                <tr>
+                    <td colspan='7' class="loading-row">
+                        <i class="fas fa-spinner fa-spin"></i> ይጽዓን ኣሎ...
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 
@@ -90,14 +93,15 @@
         </div>
     </div>
 </div>
+
 <div id="customAlert" class="custom-alert hidden">
     <div class="custom-alert-content">
-        <i class="
-        fas fa-check-circle alert-icon"></i>
+        <i class="fas fa-check-circle alert-icon"></i>
         <p id="customAlertMessage">ሪፖርት ብትኽክል ተጻርዩ ኣሎ!</p>
         <button onclick="closeCustomAlert()" class="btn alert-close-btn">እሺ (OK)</button>
     </div>
 </div>
+
 <div id="customConfirmOverlay" class="confirm-overlay" style="display: none;">
     <div class="confirm-box">
         <div class="confirm-icon"><i class="fas fa-question-circle"></i></div>
